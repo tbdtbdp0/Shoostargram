@@ -31,8 +31,6 @@
     .manage-actions button { width: auto; padding: 6px 10px; margin: 0; font-size: 11px; border-radius: 5px; }
     .btn-edit { background: #fff; color: #0095f6; border: 1px solid #0095f6; }
     .btn-delete { background: #fff; color: #ed4956; border: 1px solid #ed4956; }
-    #code-output-area { display: none; margin-top: 20px; }
-    #final-code { width: 100%; height: 150px; padding: 10px; font-family: monospace; font-size: 11px; border: 1px solid #ccc; border-radius: 6px; resize: vertical; box-sizing: border-box; }
     * { box-sizing: border-box; }
     .phone-frame { width: 390px; height: 844px; background: #000; border-radius: 55px; box-shadow: 0 0 60px rgba(0,0,0,0.6); border: 8px solid #333; position: relative; overflow: hidden; transform: scale(0.85); }
     .dynamic-island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 120px; height: 35px; background: #000; border-radius: 20px; z-index: 100; }
@@ -166,12 +164,7 @@
     <div id="manage-list-container" class="manage-list"></div>
 
     <div class="section-title">4. 최종 완성</div>
-    <button id="btn-generate-code" class="btn-success">최종 코드 추출하기</button>
-    
-    <div id="code-output-area">
-        <textarea id="final-code" readonly></textarea>
-        <button id="btn-copy-code" class="btn-secondary" style="margin-top: 5px;">복사하기</button>
-    </div>
+    <button id="btn-download-html" class="btn-success">HTML 파일로 다운로드</button>
 </div>
 
 <div class="preview-panel">
@@ -495,7 +488,7 @@
         document.getElementById('modal-feed-content').innerHTML = '';
     }
 
-    document.getElementById('btn-generate-code').addEventListener('click', () => {
+    document.getElementById('btn-download-html').addEventListener('click', () => {
         const phoneHTML = document.getElementById('export-target').outerHTML;
         const styles = document.querySelector('style').innerHTML;
 
@@ -544,17 +537,15 @@
 </body>
 </html>`;
 
-        const outArea = document.getElementById('code-output-area');
-        document.getElementById('final-code').value = finalOutput;
-        outArea.style.display = 'block';
-        outArea.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    document.getElementById('btn-copy-code').addEventListener('click', () => {
-        const copyText = document.getElementById('final-code');
-        copyText.select();
-        document.execCommand('copy');
-        alert("코드가 복사되었습니다. html 뷰어 등을 통해 감상하세요!");
+        const blob = new Blob([finalOutput], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'shoostargram.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     });
 </script>
 
