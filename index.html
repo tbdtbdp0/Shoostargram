@@ -92,7 +92,8 @@
     .post-modal.show { display: flex; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .modal-header { padding: 0 16px; height: 44px; display: flex; align-items: center; border-bottom: 1px solid #dbdbdb; font-weight: 600; font-size: 16px; }
-    .modal-back-btn { background: none; border: none; padding: 0; margin-right: 15px; cursor: pointer; }
+    .modal-back-btn { background: transparent; border: none; padding: 0; margin-right: 15px; cursor: pointer; display: flex; align-items: center; outline: none; -webkit-tap-highlight-color: transparent; box-shadow: none; }
+    .modal-back-btn:hover, .modal-back-btn:focus, .modal-back-btn:active { background: transparent; outline: none; box-shadow: none; }
     .modal-scroll { flex: 1; overflow-y: auto; padding-bottom: 20px; }
     .modal-scroll::-webkit-scrollbar { display: none; }
     .bottom-nav { height: 50px; background: #fff; border-top: 0.5px solid #dbdbdb; display: flex; justify-content: space-around; align-items: center; position: absolute; bottom: 0; width: 100%; z-index: 100; padding-bottom: env(safe-area-inset-bottom, 15px); }
@@ -247,9 +248,9 @@
             <div class="post-modal" id="postModal">
                 <div class="modal-header">
                     <button class="modal-back-btn" onclick="closeModal()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                     </button>
-                    <div style="font-size: 14px; font-weight:700; text-transform:uppercase; color:#262626;">게시물</div>
+                    <div style="font-size: 14px; font-weight:700; text-transform:uppercase; color:#262626; white-space: nowrap;">게시물</div>
                 </div>
                 <div class="modal-scroll" id="modal-feed-content">
                 </div>
