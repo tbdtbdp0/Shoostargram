@@ -2,552 +2,2513 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
 <title>슈스타그램 메이커</title>
-<style>
-    body { background-color: #f4f5f7; margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; height: 100vh; overflow: hidden; }
-    .control-panel { width: 450px; background: #fff; padding: 30px; box-shadow: 2px 0 15px rgba(0,0,0,0.08); overflow-y: auto; z-index: 10; }
-    .preview-panel { flex: 1; display: flex; justify-content: center; align-items: center; background-color: #1a1a1a; position: relative; }
-    h1 { font-size: 22px; margin-bottom: 20px; color: #111; font-weight: 800; letter-spacing: -0.5px; }
-    .section-title { font-size: 15px; font-weight: 700; margin: 30px 0 12px; border-bottom: 2px solid #111; padding-bottom: 6px; color: #111; }
-    .input-group { margin-bottom: 12px; }
-    .input-group label { display: block; font-size: 12px; color: #555; margin-bottom: 4px; font-weight: 600; }
-    .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 13px; background: #fafafa; transition: 0.2s; }
-    .input-group input[type="file"] { padding: 7px; background: #fff; cursor: pointer; }
-    .input-group input[type="checkbox"] { width: auto; transform: scale(1.2); margin-right: 8px; cursor: pointer; }
-    .input-group input:focus, .input-group textarea:focus { border-color: #000; outline: none; background: #fff; }
-    .input-row { display: flex; gap: 10px; }
-    .input-row .input-group { flex: 1; }
-    button { background: #0095f6; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; margin-bottom: 8px; }
-    button:hover { background: #0077c2; }
-    .btn-secondary { background: #efefef; color: #111; }
-    .btn-secondary:hover { background: #dbdbdb; }
-    .btn-success { background: #28a745; margin-top: 20px; font-size: 16px; padding: 15px; }
-    .manage-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    .manage-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #f8f9fa; border: 1px solid #eee; border-radius: 8px; font-size: 12px; }
-    .manage-item img { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; margin-right: 10px; }
-    .manage-item-info { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; font-weight: 500; }
-    .manage-actions { display: flex; gap: 5px; }
-    .manage-actions button { width: auto; padding: 6px 10px; margin: 0; font-size: 11px; border-radius: 5px; }
-    .btn-edit { background: #fff; color: #0095f6; border: 1px solid #0095f6; }
-    .btn-delete { background: #fff; color: #ed4956; border: 1px solid #ed4956; }
-    * { box-sizing: border-box; }
-    .phone-frame { width: 390px; height: 844px; background: #000; border-radius: 55px; box-shadow: 0 0 60px rgba(0,0,0,0.6); border: 8px solid #333; position: relative; overflow: hidden; transform: scale(0.85); }
-    .dynamic-island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 120px; height: 35px; background: #000; border-radius: 20px; z-index: 100; }
-    .screen-area { width: 100%; height: 100%; background: #fff; border-radius: 48px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .status-bar { height: 54px; display: flex; justify-content: flex-end; padding: 14px 26px 0; font-size: 15px; font-weight: 600; z-index: 90; letter-spacing: -0.5px; }
-    .app-header { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: #fff; z-index: 80; border-bottom: 0.5px solid #dbdbdb; }
-    .username { font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 4px; letter-spacing: -0.5px; }
-    .header-actions { display: flex; gap: 20px; }
-    .content-container { flex: 1; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; padding-bottom: 60px; background: #fff; }
-    .content-container::-webkit-scrollbar { display: none; }
-    #page-profile { display: block; }
-    .profile-info { padding: 12px 20px 0; display: flex; align-items: center; justify-content: space-between; }
-    .profile-img-wrap { position: relative; width: 86px; height: 86px; border-radius: 50%; padding: 3px; background: #dbdbdb; }
-    .profile-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #fff; object-fit: cover; background-color: #eee; }
-    .my-story-badge { position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; background: #0095f6; border-radius: 50%; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; font-weight: bold; line-height: 1; z-index: 2; }
-    .stats-group { display: flex; gap: 24px; text-align: center; margin-right: 10px; }
-    .stat-num { display: block; font-weight: 700; font-size: 17px; }
-    .stat-label { font-size: 13px; color: #262626; margin-top: -2px; }
-    .bio-area { padding: 12px 20px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; color: #262626; }
-    .action-btns { padding: 0 16px 15px; display: flex; gap: 8px; }
-    .btn-profile { flex: 1; background: #efefef; color: #000; border: none; border-radius: 8px; padding: 7px; font-weight: 600; font-size: 13px; cursor: pointer; text-align: center; }
-    .highlights { display: flex; gap: 15px; padding: 5px 16px 15px; overflow-x: auto; border-bottom: 0.5px solid #dbdbdb; }
-    .highlights::-webkit-scrollbar { display: none; }
-    .highlight-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; }
-    .hl-circle { width: 64px; height: 64px; border-radius: 50%; border: 1px solid #dbdbdb; padding: 3px; display: flex; align-items: center; justify-content: center; background: #fff; }
-    .hl-inner { width: 100%; height: 100%; background: #f0f0f0; border-radius: 50%; overflow: hidden; border: 1px solid #efefef; }
-    .hl-inner img { width: 100%; height: 100%; object-fit: cover; }
-    .hl-title { font-size: 12px; color: #262626; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .grid-tabs { display: flex; height: 44px; }
-    .grid-tab { flex: 1; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-    .grid-tab.active { border-bottom: 1px solid #262626; }
-    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; } 
-    .grid-cell { position: relative; padding-bottom: 100%; background: #eee; cursor: pointer; overflow: hidden; }
-    .grid-cell img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
-    #page-home { display: none; padding-top: 0; }
-    .home-header { position: sticky; top: 0; background: #fff; z-index: 80; border-bottom: 0.5px solid #dbdbdb; }
-    .app-logo { font-family: 'Brush Script MT', 'Apple Chancery', 'Snell Roundhand', cursive; font-size: 26px; font-weight: 500; margin-top: 4px; color: #000; letter-spacing: -0.5px; }
-    .story-container { display: flex; gap: 12px; padding: 10px 14px; border-bottom: 0.5px solid #dbdbdb; overflow-x: auto; }
-    .story-container::-webkit-scrollbar { display: none; }
-    .story-item { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; width: 66px; cursor: pointer; }
-    .story-ring { width: 66px; height: 66px; border-radius: 50%; padding: 2.5px; position: relative; }
-    .story-ring.active { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-    .story-ring.empty { background: transparent; }
-    .story-ring img { width: 100%; height: 100%; border-radius: 50%; border: 2.5px solid #fff; object-fit: cover; background: #fff; }
-    .story-name { font-size: 11px; color: #262626; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .feed-post { margin-bottom: 15px; border-bottom: 0.5px solid #dbdbdb; padding-bottom: 15px; }
-    .feed-header { display: flex; align-items: center; padding: 10px 14px; justify-content: space-between; }
-    .feed-user { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
-    .feed-user-ring { width: 36px; height: 36px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, #f09433, #bc1888); }
-    .feed-user-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1.5px solid #fff; }
-    .feed-main-img { width: 100%; display: block; aspect-ratio: 4/5; object-fit: cover; background: #eee; }
-    .feed-actions { padding: 12px 14px 8px; display: flex; justify-content: space-between; align-items: center; }
-    .action-left { display: flex; gap: 16px; align-items: center; }
-    .feed-likes { padding: 0 14px; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-    .feed-caption { padding: 0 14px; font-size: 14px; line-height: 1.4; color: #262626; }
-    .feed-caption span { font-weight: 600; margin-right: 6px; color: #000; }
-    .feed-date { padding: 0 14px; font-size: 11px; color: #737373; margin-top: 6px; text-transform: uppercase; }
-    .post-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: none; flex-direction: column; animation: slideUp 0.2s ease-out; }
-    .post-modal.show { display: flex; }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-header { padding: 0 16px; height: 44px; display: flex; align-items: center; border-bottom: 1px solid #dbdbdb; font-weight: 600; font-size: 16px; }
-    .modal-back-btn { background: transparent; border: none; padding: 0; margin-right: 15px; cursor: pointer; display: flex; align-items: center; outline: none; -webkit-tap-highlight-color: transparent; box-shadow: none; }
-    .modal-back-btn:hover, .modal-back-btn:focus, .modal-back-btn:active { background: transparent; outline: none; box-shadow: none; }
-    .modal-scroll { flex: 1; overflow-y: auto; padding-bottom: 20px; }
-    .modal-scroll::-webkit-scrollbar { display: none; }
-    .bottom-nav { height: 50px; background: #fff; border-top: 0.5px solid #dbdbdb; display: flex; justify-content: space-around; align-items: center; position: absolute; bottom: 0; width: 100%; z-index: 100; padding-bottom: env(safe-area-inset-bottom, 15px); }
-    .nav-item { cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; }
-    .my-profile-icon { width: 24px; height: 24px; border-radius: 50%; overflow: hidden; border: 1px solid #dbdbdb; transition: border 0.1s; }
-    .my-profile-icon.active { border: 2px solid #262626; }
-    .my-profile-icon img { width: 100%; height: 100%; object-fit: cover; }
-    .icon { fill: none; stroke: #262626; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+<!-- ===================== 에디터 스타일 ===================== -->
+<style id="app-style">
+:root{
+  --bg:#e8f3fc; --panel:#ffffff; --panel-2:#f5faff; --panel-3:#e7f2fb;
+  --line:#d8e9f7; --line-2:#c7dff2;
+  --text:#153348; --muted:#7397b0;
+  --accent:#3ba7ef; --accent-deep:#1f8ad0;
+  --accent-soft:#e2f2fe; --accent-fill:#cbe8fb; --accent-fill-2:#b4dcf7;
+  --ok:#22a06b; --danger:#f0637a;
+  --shadow-sm:0 1px 2px rgba(21,51,72,.05);
+  --shadow:0 2px 6px rgba(21,51,72,.05), 0 12px 32px rgba(21,51,72,.08);
+  --r-sm:11px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", "Segoe UI", Roboto, sans-serif;
+  font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased; overflow:hidden;
+}
+button{font-family:inherit}
+
+/* ---------- 레이아웃 ---------- */
+.app{display:flex; height:100dvh; width:100%}
+.pane-editor{
+  width:min(460px,45vw); min-width:376px; flex-shrink:0;
+  background:var(--panel); border-right:1px solid var(--line);
+  display:flex; flex-direction:column; position:relative; z-index:5;
+}
+.stage{
+  flex:1; background:#fff; position:relative;
+  display:flex; align-items:center; justify-content:center; overflow:auto; padding:26px;
+}
+body[data-view="desktop"] .app{min-width:920px}
+body[data-view="desktop"]{overflow-x:auto}
+body[data-view="desktop"] .pane-switch{display:none}
+body[data-view="mobile"] .app{display:block; position:relative}
+body[data-view="mobile"] .pane-editor{
+  width:100%; min-width:0; max-width:560px; margin:0 auto;
+  border-left:1px solid var(--line); border-right:1px solid var(--line); height:100dvh;
+}
+body[data-view="mobile"] .stage{position:absolute; inset:0; padding:16px 12px 96px}
+body[data-view="mobile"][data-pane="editor"] .stage{display:none}
+body[data-view="mobile"][data-pane="preview"] .pane-editor{display:none}
+body[data-view="mobile"] .pane-switch{display:flex}
+body[data-view="mobile"] .editor-scroll{padding-bottom:110px}
+
+/* ---------- 헤더 ---------- */
+.editor-top{display:flex; align-items:center; gap:9px; padding:13px 16px; background:var(--panel); border-bottom:1px solid var(--line)}
+.brand{display:flex; align-items:center; gap:8px; min-width:0; flex:1}
+.brand-emoji{font-size:21px; line-height:1; flex-shrink:0}
+.brand h1{font-size:15px; font-weight:800; margin:0; letter-spacing:-.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.save-pill{
+  font-size:11px; font-weight:700; color:var(--muted); background:var(--panel-3);
+  border-radius:999px; padding:6px 11px; display:inline-flex; align-items:center; gap:6px;
+  white-space:nowrap; max-width:132px; overflow:hidden; flex-shrink:0;
+}
+.save-pill .dot{width:6px; height:6px; border-radius:50%; background:var(--ok); flex-shrink:0}
+.save-pill.saving .dot{background:#f0a92c; animation:pulse .9s infinite}
+.save-pill span:last-child{overflow:hidden; text-overflow:ellipsis}
+@keyframes pulse{50%{opacity:.25}}
+.view-toggle{display:flex; gap:2px; background:var(--panel-3); border-radius:999px; padding:3px; flex-shrink:0}
+.view-toggle button{
+  border:none; background:transparent; color:var(--muted); cursor:pointer; font-size:13px;
+  width:30px; height:26px; border-radius:999px; transition:.16s; display:grid; place-items:center; padding:0;
+}
+.view-toggle button.active{background:#fff; box-shadow:var(--shadow-sm)}
+
+/* ---------- 탭 ---------- */
+.tabs{display:flex; gap:2px; padding:0 8px; border-bottom:1px solid var(--line); background:var(--panel); overflow-x:auto; scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{
+  position:relative; flex:1 0 auto; border:none; background:transparent; color:var(--muted);
+  font-size:12.5px; font-weight:700; padding:11px 9px 12px; cursor:pointer; transition:.16s;
+  border-radius:10px 10px 0 0; white-space:nowrap;
+}
+.tabs button:hover{color:var(--text); background:var(--panel-2)}
+.tabs button.active{color:var(--accent-deep)}
+.tabs button.active::after{content:""; position:absolute; left:10%; right:10%; bottom:0; height:3px; border-radius:3px 3px 0 0; background:var(--accent)}
+.tabs .badge{
+  display:inline-block; min-width:16px; padding:0 5px; margin-left:4px; border-radius:999px;
+  background:var(--panel-3); color:var(--muted); font-size:10px; font-weight:800; line-height:16px;
+}
+.tabs button.active .badge{background:var(--accent-soft); color:var(--accent-deep)}
+
+/* ---------- 패널 ---------- */
+.editor-scroll{flex:1; overflow-y:auto; padding:4px 16px 80px; scrollbar-width:thin}
+.editor-scroll::-webkit-scrollbar{width:8px}
+.editor-scroll::-webkit-scrollbar-thumb{background:var(--line-2); border-radius:99px}
+.panel{display:none; animation:fade .22s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0; transform:translateY(4px)}to{opacity:1; transform:none}}
+.sec-title{
+  font-size:14px; font-weight:800; color:var(--text); letter-spacing:-.2px;
+  margin:24px 0 10px; display:flex; align-items:center; gap:9px;
+}
+.sec-title::before{content:""; width:4px; height:15px; border-radius:3px; background:var(--accent); flex-shrink:0}
+.sec-title::after{content:""; flex:1; height:1px; background:var(--line)}
+.panel>.sec-title:first-child{margin-top:16px}
+.note{
+  background:var(--accent-soft); border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:10px 12px; font-size:12px; color:var(--accent-deep); font-weight:600; line-height:1.55; margin-top:12px;
+}
+
+/* ---------- 폼 ---------- */
+.field{margin-top:13px}
+.field>label{display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px}
+.row{display:flex; gap:9px}
+.row>.field{flex:1}
+input[type="text"], textarea, select{
+  width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:var(--r-sm);
+  background:var(--panel-2); color:var(--text); font-size:13.5px; font-family:inherit; transition:.15s; resize:vertical;
+}
+input[type="text"]:focus, textarea:focus, select:focus{outline:none; border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{line-height:1.5}
+::placeholder{color:#a8c3d6}
+.switch-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:15px}
+.switch-row span{font-size:13px; font-weight:600}
+.switch{position:relative; width:44px; height:25px; flex-shrink:0}
+.switch input{opacity:0; width:0; height:0; position:absolute}
+.switch i{position:absolute; inset:0; background:var(--panel-3); border:1px solid var(--line); border-radius:999px; cursor:pointer; transition:.2s}
+.switch i::after{content:""; position:absolute; top:2px; left:2px; width:19px; height:19px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(21,51,72,.25); transition:.2s}
+.switch input:checked + i{background:#7ec8f2; border-color:transparent}
+.switch input:checked + i::after{transform:translateX(19px)}
+.segment{display:flex; gap:4px; background:var(--panel-3); padding:4px; border-radius:var(--r-sm)}
+.segment button{flex:1; border:none; background:transparent; color:var(--muted); font-size:12.5px; font-weight:700; padding:9px 4px; border-radius:8px; cursor:pointer; transition:.15s}
+.segment button.active{background:#fff; color:var(--accent-deep); box-shadow:var(--shadow-sm)}
+.drop{
+  position:relative; border:1.5px dashed var(--line-2); border-radius:var(--r-sm); background:var(--panel-2);
+  padding:13px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:.15s; min-height:72px;
+}
+.drop:hover,.drop.over{border-color:var(--accent); background:var(--accent-soft)}
+.drop input[type=file]{position:absolute; inset:0; opacity:0; cursor:pointer}
+.drop-thumb{width:46px; height:46px; border-radius:9px; object-fit:cover; flex-shrink:0; background:var(--panel-3); border:1px solid var(--line); display:block}
+.drop-thumb.round{border-radius:50%}
+.drop-txt{font-size:12px; color:var(--muted); font-weight:600; line-height:1.5; min-width:0}
+.drop-txt b{display:block; color:var(--text); font-size:12.5px; margin-bottom:2px}
+.btn{border:none; border-radius:var(--r-sm); padding:12px 14px; font-size:13.5px; font-weight:700; cursor:pointer; transition:.15s; width:100%; display:inline-flex; align-items:center; justify-content:center; gap:6px}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent-fill); color:#12628f}
+.btn-primary:hover{background:var(--accent-fill-2)}
+.btn-ghost{background:var(--panel-3); color:var(--accent-deep)}
+.btn-ghost:hover{background:var(--line)}
+.btn-danger{background:#fff; color:var(--danger); border:1px solid var(--line)}
+.btn-danger:hover{background:#fff0f3; border-color:var(--danger)}
+.btn-row{display:flex; gap:8px; margin-top:12px}
+.btn-row .btn{width:auto; flex:1}
+
+/* ---------- 리스트 ---------- */
+.item{display:flex; align-items:center; gap:10px; padding:8px; margin-bottom:6px; background:var(--panel-2); border:1px solid var(--line); border-radius:var(--r-sm); transition:.15s}
+.item:hover{border-color:var(--accent); background:#fff}
+.item.selected{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); background:#fff}
+.item.editing{border-color:#f0b13c; box-shadow:0 0 0 3px #fdf0d8; background:#fffdf7}
+.item .tag{
+  display:inline-block; margin-left:5px; padding:1px 6px; border-radius:999px;
+  font-size:9.5px; font-weight:800; vertical-align:middle;
+}
+.item.selected .tag{background:var(--accent-soft); color:var(--accent-deep)}
+.item.editing .tag{background:#fdf0d8; color:#a86c10}
+.item>img{width:38px; height:38px; border-radius:9px; object-fit:cover; flex-shrink:0; background:var(--panel-3)}
+.item>img.round{border-radius:50%}
+.item-info{flex:1; min-width:0; cursor:pointer}
+.item-info b{display:block; font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.item-info small{font-size:10.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
+.item-acts{display:flex; gap:1px; flex-shrink:0}
+.item-acts button{width:26px; height:26px; border-radius:7px; border:none; background:transparent; color:var(--muted); cursor:pointer; display:grid; place-items:center; transition:.15s; padding:0}
+.item-acts button:hover{background:var(--panel-3); color:var(--accent-deep)}
+.item-acts button.del:hover{background:#fff0f3; color:var(--danger)}
+.item-acts button:disabled{opacity:.25; cursor:default}
+.item-acts svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.empty{text-align:center; padding:24px 12px; color:var(--muted); font-size:12.5px; border:1px dashed var(--line-2); border-radius:var(--r-sm); background:var(--panel-2); line-height:1.7}
+.hint{font-size:11.5px; color:var(--muted); margin-top:10px; line-height:1.6}
+.hint b{color:var(--accent-deep)}
+.notice{margin:0; padding:14px 16px 14px 30px; background:var(--panel-2); border:1px solid var(--line); border-radius:var(--r-sm); list-style:none}
+.notice li{position:relative; font-size:12.5px; line-height:1.75; color:var(--text); margin-bottom:6px}
+.notice li:last-child{margin-bottom:0}
+.notice li::before{content:"–"; position:absolute; left:-14px; color:var(--accent); font-weight:800}
+.links{display:flex; flex-direction:column; gap:7px}
+.link-row{
+  display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:var(--r-sm);
+  background:var(--panel-2); border:1px solid var(--line); color:var(--accent-deep);
+  text-decoration:none; transition:.15s;
+}
+.link-row:hover{background:var(--accent-soft); border-color:var(--accent)}
+.link-ico{font-size:16px; flex-shrink:0}
+.link-txt{flex:1; min-width:0; font-size:11.5px; color:var(--muted); line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.link-txt b{display:block; font-size:13px; color:var(--text); font-weight:700}
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.chip{
+  display:inline-flex; align-items:center; gap:6px; padding:6px 10px 6px 6px; border-radius:999px;
+  background:var(--panel-2); border:1px solid var(--line); font-size:11.5px; font-weight:700; cursor:pointer; transition:.15s;
+}
+.chip img{width:22px; height:22px; border-radius:50%; object-fit:cover}
+.chip.on{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-deep)}
+.msg-line{display:flex; margin-bottom:5px; align-items:flex-end; gap:6px}
+.msg-line.me{justify-content:flex-end}
+.msg-bubble{max-width:74%; padding:8px 11px; border-radius:16px; font-size:12.5px; line-height:1.4; background:var(--panel-3); color:var(--text); word-break:break-word; white-space:pre-wrap}
+.msg-line.me .msg-bubble{background:#cfe9fb; color:#12405c}
+.msg-del{border:none; background:transparent; color:var(--muted); cursor:pointer; font-size:14px; padding:0 2px; line-height:1; opacity:.55}
+.msg-del:hover{opacity:1; color:var(--danger)}
+
+/* ---------- 사진 자르기 ---------- */
+.crop-back{position:fixed; inset:0; background:rgba(12,32,48,.55); backdrop-filter:blur(3px); z-index:500; display:none; align-items:center; justify-content:center; padding:18px}
+.crop-back.show{display:flex}
+.crop-box{background:var(--panel); border-radius:20px; box-shadow:var(--shadow); width:min(400px,100%); max-height:94dvh; overflow:auto; padding:18px}
+.crop-box h3{margin:0 0 4px; font-size:15px; font-weight:800}
+.crop-box p{margin:0 0 14px; font-size:12px; color:var(--muted)}
+.crop-stage{
+  position:relative; width:100%; background:#10222e; border-radius:12px; overflow:hidden;
+  touch-action:none; user-select:none;
+}
+.crop-stage img{position:absolute; transform-origin:top left; pointer-events:none; -webkit-user-drag:none}
+.crop-ratios{display:flex; gap:5px; margin-top:12px}
+.crop-ratios button{flex:1; border:1px solid var(--line); background:var(--panel-2); color:var(--muted); font-size:11.5px; font-weight:700; padding:8px 2px; border-radius:9px; cursor:pointer; transition:.15s}
+.crop-ratios button.active{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-deep)}
+.crop-sel{position:absolute; border:2px solid #fff; box-shadow:0 0 0 9999px rgba(6,20,30,.55); cursor:move; box-sizing:border-box}
+.crop-sel::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px) 0 33.33%/100% 33.33%,
+             linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px) 33.33% 0/33.33% 100%;
+  opacity:.6;
+}
+.crop-sel i{position:absolute; width:16px; height:16px; background:#fff; border-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.crop-sel i[data-h="nw"]{left:-9px; top:-9px; cursor:nwse-resize}
+.crop-sel i[data-h="ne"]{right:-9px; top:-9px; cursor:nesw-resize}
+.crop-sel i[data-h="sw"]{left:-9px; bottom:-9px; cursor:nesw-resize}
+.crop-sel i[data-h="se"]{right:-9px; bottom:-9px; cursor:nwse-resize}
+.crop-sel.round{border-radius:50%}
+.crop-sel.round::before{display:none}
+.recrop{
+  position:relative; z-index:3; border:1px solid var(--line); background:#fff; color:var(--accent-deep);
+  font-size:11.5px; font-weight:700; padding:7px 10px; border-radius:8px; cursor:pointer;
+  white-space:nowrap; flex-shrink:0; margin-left:auto; transition:.15s;
+}
+.recrop:hover{background:var(--accent-soft); border-color:var(--accent)}
+
+/* ---------- 하단 전환 / 토스트 ---------- */
+.pane-switch{
+  display:none; position:fixed; left:50%; transform:translateX(-50%);
+  bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:200;
+  background:#fff; border:1px solid var(--line); border-radius:999px; padding:5px; gap:4px; box-shadow:0 6px 24px rgba(21,51,72,.14);
+}
+.pane-switch button{border:none; background:transparent; color:var(--muted); font-size:13px; font-weight:700; padding:9px 20px; border-radius:999px; cursor:pointer; transition:.18s; white-space:nowrap}
+.pane-switch button.active{background:var(--accent-fill); color:#12628f}
+.toast{
+  position:fixed; bottom:26px; left:50%; transform:translate(-50%,20px); background:#17364d; color:#fff;
+  padding:11px 18px; border-radius:999px; font-size:13px; font-weight:600; z-index:600; opacity:0;
+  pointer-events:none; transition:.25s; box-shadow:0 10px 30px rgba(21,51,72,.3); white-space:nowrap;
+}
+.toast.show{opacity:1; transform:translate(-50%,0)}
+.phone-wrap{position:relative; flex-shrink:0}
+.phone-wrap #export-target{position:absolute; top:0; left:0; transform-origin:top left}
+
+@media (max-width:520px){
+  .tabs{padding:0 4px}
+  .tabs button{padding:11px 5px 12px; font-size:12px}
+  .tabs .badge{margin-left:3px; min-width:14px; padding:0 4px; font-size:9.5px; line-height:14px}
+  .editor-top{padding:12px 13px}
+  .save-pill{max-width:104px; padding:5px 9px}
+  .editor-scroll{padding-left:13px; padding-right:13px}
+}
+</style>
+
+<!-- ===================== 미리보기(휴대폰) 스타일 ===================== -->
+<style id="phone-style">
+.phone-frame{
+  width:390px; height:844px; background:#000; border-radius:55px;
+  box-shadow:0 20px 55px rgba(20,45,70,.22), 0 0 0 1px rgba(20,45,70,.06);
+  border:8px solid #1f2126; position:relative; overflow:hidden;
+}
+.phone-frame *{box-sizing:border-box}
+.dynamic-island{position:absolute; top:11px; left:50%; transform:translateX(-50%); width:120px; height:35px; background:#000; border-radius:20px; z-index:250}
+.screen-area{
+  width:100%; height:100%; background:#fff; border-radius:48px; display:flex; flex-direction:column;
+  overflow:hidden; position:relative; color:#262626;
+  font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+}
+.status-bar{height:54px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 4px; font-size:15px; font-weight:600; z-index:90; letter-spacing:-.5px; color:#000; flex-shrink:0}
+.status-bar .sb-right{display:flex; gap:6px; align-items:center}
+.page{flex:1; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; background:#fff; display:none}
+.page::-webkit-scrollbar{display:none}
+.page.on{display:block}
+.pad-nav{padding-bottom:66px}
+.app-header{height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 14px; background:#fff; z-index:80; flex-shrink:0}
+.username{font-weight:700; font-size:20px; display:flex; align-items:center; gap:4px; letter-spacing:-.5px}
+.header-actions{display:flex; gap:18px; align-items:center}
+.ig-badge{position:absolute; top:-5px; right:-7px; min-width:16px; height:16px; padding:0 4px; background:#fe0138; color:#fff; border-radius:999px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border:1.5px solid #fff}
+.icon-wrap{position:relative; display:flex}
+
+/* 프로필 */
+.profile-info{padding:12px 20px 0; display:flex; align-items:center; justify-content:space-between}
+.profile-img-wrap{position:relative; width:86px; height:86px; border-radius:50%; padding:3px; background:#dbdbdb}
+.profile-img-wrap.has-story{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); cursor:pointer}
+.profile-img{width:100%; height:100%; border-radius:50%; border:2px solid #fff; object-fit:cover; background:#eee}
+.my-story-badge{position:absolute; bottom:0; right:0; width:24px; height:24px; background:#0095f6; border-radius:50%; border:3px solid #fff; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; font-weight:700; line-height:1; z-index:2}
+.stats-group{display:flex; gap:26px; text-align:center; margin-right:10px}
+.stat-num{display:block; font-weight:700; font-size:17px}
+.stat-label{font-size:13px; color:#262626; margin-top:-2px}
+.bio-area{padding:11px 20px 12px; font-size:14px; line-height:1.45; white-space:pre-wrap; color:#262626; word-break:break-word}
+.bio-name{font-weight:600; display:block; margin-bottom:1px}
+.action-btns{padding:0 16px 14px; display:flex; gap:6px}
+.btn-profile{flex:1; background:#efefef; color:#000; border:none; border-radius:8px; padding:8px; font-weight:600; font-size:13px; text-align:center}
+.btn-profile.icon-only{flex:0 0 34px; display:flex; align-items:center; justify-content:center}
+.highlights{display:flex; gap:15px; padding:2px 16px 16px; overflow-x:auto}
+.highlights::-webkit-scrollbar{display:none}
+.highlights:empty{display:none}
+.highlight-item{display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; cursor:pointer}
+.hl-circle{width:62px; height:62px; border-radius:50%; border:1px solid #dbdbdb; padding:3px; display:flex; align-items:center; justify-content:center; background:#fff}
+.hl-inner{width:100%; height:100%; background:#f0f0f0; border-radius:50%; overflow:hidden}
+.hl-inner img{width:100%; height:100%; object-fit:cover}
+.hl-title{font-size:12px; color:#262626; max-width:64px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.grid-tabs{display:flex; height:44px; border-top:.5px solid #dbdbdb; position:sticky; top:0; background:#fff; z-index:10}
+.grid-tab{flex:1; display:flex; justify-content:center; align-items:center; cursor:pointer; opacity:.4}
+.grid-tab.active{opacity:1; box-shadow:inset 0 -1.5px 0 #262626}
+.photo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.5px}
+.grid-cell{position:relative; padding-bottom:100%; background:#efefef; cursor:pointer; overflow:hidden}
+.grid-cell img{position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover}
+.grid-empty{grid-column:1/-1; text-align:center; padding:46px 20px; color:#b8b8b8; font-size:13px; line-height:1.8}
+.grid-reels .grid-cell{padding-bottom:170%}
+.grid-cell .cell-views{position:absolute; left:7px; bottom:6px; color:#fff; font-size:11.5px; font-weight:600; display:flex; align-items:center; gap:4px; text-shadow:0 1px 3px rgba(0,0,0,.5); z-index:2}
+.grid-cell .cell-play{position:absolute; top:6px; right:7px; z-index:2; filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+
+/* 홈 */
+.home-header{position:sticky; top:0; background:#fff; z-index:80}
+.app-logo{font-family:'Brush Script MT','Apple Chancery','Snell Roundhand',cursive; font-size:26px; font-weight:500; margin-top:4px; color:#000; letter-spacing:-.5px}
+.story-container{display:flex; gap:12px; padding:8px 14px 12px; border-bottom:.5px solid #efefef; overflow-x:auto}
+.story-container::-webkit-scrollbar{display:none}
+.story-item{display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; width:66px; cursor:pointer}
+.story-ring{width:66px; height:66px; border-radius:50%; padding:2.5px; position:relative}
+.story-ring.active{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)}
+.story-ring.empty{background:transparent}
+.story-ring img{width:100%; height:100%; border-radius:50%; border:2.5px solid #fff; object-fit:cover; background:#fff}
+.story-name{font-size:11px; color:#262626; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.feed-post{margin-bottom:10px}
+.feed-header{display:flex; align-items:center; padding:9px 14px; justify-content:space-between}
+.feed-user{display:flex; align-items:center; gap:10px; font-weight:600; font-size:13.5px}
+.feed-user-ring{width:34px; height:34px; border-radius:50%; padding:2px; background:linear-gradient(45deg,#f09433,#bc1888); flex-shrink:0}
+.feed-user-ring.plain{background:#dbdbdb}
+.feed-user-img{width:100%; height:100%; border-radius:50%; object-fit:cover; border:1.5px solid #fff}
+.feed-main-img{width:100%; display:block; aspect-ratio:4/5; object-fit:cover; background:#efefef}
+.feed-actions{padding:11px 14px 7px; display:flex; justify-content:space-between; align-items:center}
+.action-left{display:flex; gap:16px; align-items:center}
+.fa-item{display:flex; align-items:center; gap:6px; font-size:14px; font-weight:600; color:#262626}
+.feed-comment-list{padding:3px 14px 0; display:flex; flex-direction:column; gap:3px}
+.fc{display:flex; align-items:flex-start; gap:8px; font-size:13.5px; line-height:1.45; color:#262626; word-break:break-word}
+.fc b{font-weight:600; flex-shrink:0}
+.fc-text{flex:1; white-space:pre-wrap}
+.fc svg{flex-shrink:0; margin-top:3px}
+.feed-caption{padding:0 14px; font-size:13.5px; line-height:1.45; color:#262626; word-break:break-word; white-space:pre-wrap}
+.feed-caption span{font-weight:600; margin-right:5px; color:#000}
+.feed-comments{padding:4px 14px 0; font-size:13.5px; color:#8e8e8e}
+.feed-date{padding:0 14px; font-size:11px; color:#a8a8a8; margin-top:5px}
+.feed-empty{text-align:center; padding:70px 26px; color:#b8b8b8; font-size:13px; line-height:1.9}
+.feed-end{text-align:center; padding:26px; color:#c9c9c9; font-size:12px}
+
+/* 탐색 */
+.search-bar{margin:6px 14px 10px; background:#efefef; border-radius:10px; height:36px; display:flex; align-items:center; gap:8px; padding:0 12px; color:#8e8e8e; font-size:14px}
+
+/* 릴스 */
+#page-reels{background:#000; overflow:hidden; position:relative}
+.reels-scroll{height:100%; overflow-y:auto; scroll-snap-type:y mandatory; scrollbar-width:none}
+.reels-scroll::-webkit-scrollbar{display:none}
+.reel{position:relative; height:100%; scroll-snap-align:start; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden}
+.reel>img{width:100%; height:100%; object-fit:cover}
+.reel::after{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.45) 0 14%, transparent 30% 62%, rgba(0,0,0,.55) 100%)}
+.reel-top{position:absolute; top:16px; left:0; right:0; padding:0 16px; display:flex; justify-content:space-between; align-items:center; color:#fff; font-size:19px; font-weight:700; z-index:3}
+.reel-bottom{position:absolute; left:14px; right:74px; bottom:82px; color:#fff; z-index:3}
+.reel-user{display:flex; align-items:center; gap:9px; font-size:13.5px; font-weight:600; margin-bottom:8px}
+.reel-user img{width:32px; height:32px; border-radius:50%; object-fit:cover; border:1.5px solid #fff}
+.reel-cap{font-size:13px; line-height:1.4; text-shadow:0 1px 3px rgba(0,0,0,.4); word-break:break-word}
+.reel-music{display:flex; align-items:center; gap:6px; font-size:12px; margin-top:9px; opacity:.95; text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.reel-music svg{stroke:#fff; fill:none; stroke-width:1.8; flex-shrink:0}
+.reel-views{position:absolute; left:14px; bottom:60px; color:#fff; font-size:12px; font-weight:600; display:flex; align-items:center; gap:5px; z-index:3; text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.reel-rail{position:absolute; right:12px; bottom:82px; z-index:3; display:flex; flex-direction:column; align-items:center; gap:19px; color:#fff}
+.reel-rail div{display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:600}
+.reel-rail svg{stroke:#fff; fill:none; stroke-width:1.9; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.reels-empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:0 34px}
+.reels-empty span{display:block; color:#c7c7c7; font-size:13.5px; text-align:center; line-height:1.9}
+.reels-empty b{color:#fff; font-weight:700}
+
+/* DM */
+#page-dm{background:#fff}
+.dm-header{display:flex; align-items:center; gap:12px; padding:6px 14px 10px; position:sticky; top:0; background:#fff; z-index:10}
+.dm-title{font-size:19px; font-weight:700; display:flex; align-items:center; gap:5px; flex:1}
+.dm-tabs{display:flex; gap:22px; padding:2px 16px 0; font-size:14px; font-weight:600; color:#8e8e8e; border-bottom:.5px solid #efefef}
+.dm-tabs b{color:#262626; padding-bottom:10px; box-shadow:inset 0 -1.5px 0 #262626}
+.dm-tabs span{padding-bottom:10px}
+.dm-list{padding:6px 0}
+.dm-row{display:flex; align-items:center; gap:12px; padding:8px 16px; cursor:pointer}
+.dm-avatar{width:56px; height:56px; border-radius:50%; object-fit:cover; background:#efefef; flex-shrink:0}
+.dm-row-info{flex:1; min-width:0}
+.dm-row-name{font-size:14px; font-weight:600}
+.dm-row-last{font-size:13px; color:#8e8e8e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px}
+.dm-row.unread .dm-row-last{color:#262626; font-weight:600}
+.dm-unread-dot{width:8px; height:8px; border-radius:50%; background:#3797f0; flex-shrink:0}
+.dm-empty{text-align:center; padding:80px 30px; color:#b8b8b8; font-size:13px; line-height:1.9}
+.thread{position:absolute; top:54px; left:0; right:0; bottom:0; background:#fff; z-index:180; display:none; flex-direction:column; border-radius:0 0 48px 48px; overflow:hidden}
+.thread.show{display:flex; animation:slideLeft .22s ease-out}
+@keyframes slideLeft{from{transform:translateX(28%); opacity:.4}to{transform:none; opacity:1}}
+.thread-head{display:flex; align-items:center; gap:11px; padding:0 14px; height:52px; border-bottom:.5px solid #efefef; flex-shrink:0}
+.thread-head img{width:34px; height:34px; border-radius:50%; object-fit:cover}
+.thread-head .th-name{font-size:15px; font-weight:600; line-height:1.2}
+.thread-head .th-sub{font-size:11px; color:#8e8e8e}
+.thread-head .th-acts{margin-left:auto; display:flex; gap:18px}
+.thread-body{flex:1; overflow-y:auto; padding:16px 12px 8px; scrollbar-width:none; background:#fff}
+.thread-body::-webkit-scrollbar{display:none}
+.thread-intro{text-align:center; padding:6px 20px 22px}
+.thread-intro img{width:78px; height:78px; border-radius:50%; object-fit:cover; margin-bottom:9px}
+.thread-intro .ti-name{font-size:16px; font-weight:600}
+.thread-intro .ti-sub{font-size:12px; color:#8e8e8e; margin-top:3px}
+.chat-time{text-align:center; font-size:11px; color:#a8a8a8; margin:14px 0 10px; font-weight:600}
+.chat{display:flex; margin-bottom:4px; align-items:flex-end; gap:7px}
+.chat.me{justify-content:flex-end}
+.chat img.ch-av{width:25px; height:25px; border-radius:50%; object-fit:cover; flex-shrink:0}
+.bubble{max-width:70%; padding:9px 13px; border-radius:20px; font-size:13.5px; line-height:1.38; word-break:break-word; white-space:pre-wrap}
+.chat.them .bubble{background:#efefef; color:#262626; border-bottom-left-radius:6px}
+.chat.me .bubble{background:linear-gradient(105deg,#4f5bd5 0%,#962fbf 45%,#d62976 100%); color:#fff; border-bottom-right-radius:6px}
+.thread-input{display:flex; align-items:center; gap:9px; padding:8px 12px 22px; border-top:.5px solid #efefef; flex-shrink:0}
+.ti-box{flex:1; height:40px; border:1px solid #dbdbdb; border-radius:999px; display:flex; align-items:center; padding:0 14px; color:#8e8e8e; font-size:13.5px; gap:8px; justify-content:space-between}
+.ti-circle{width:34px; height:34px; border-radius:50%; background:#3797f0; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+
+/* 스토리 뷰어 */
+.story-viewer{position:absolute; inset:0; background:#000; z-index:300; display:none; border-radius:48px; overflow:hidden}
+.story-viewer.show{display:block; animation:svIn .2s ease-out}
+@keyframes svIn{from{transform:scale(.94); opacity:.5}to{transform:none; opacity:1}}
+.sv-slides{position:absolute; inset:0}
+.sv-slide{position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:#000}
+.sv-slide.on{display:flex}
+.sv-slide img{width:100%; height:100%; object-fit:cover}
+.sv-slide::after{content:""; position:absolute; inset:0; background:linear-gradient(rgba(0,0,0,.5) 0 16%, transparent 34% 74%, rgba(0,0,0,.45) 100%)}
+.sv-cap{position:absolute; left:0; right:0; bottom:92px; padding:0 22px; color:#fff; font-size:14px; line-height:1.5; text-align:center; text-shadow:0 1px 4px rgba(0,0,0,.5); z-index:4; word-break:break-word}
+.sv-bars{position:absolute; top:60px; left:12px; right:12px; display:flex; gap:4px; z-index:6}
+.sv-bar{flex:1; height:2.5px; border-radius:3px; background:rgba(255,255,255,.35); overflow:hidden}
+.sv-bar i{display:block; height:100%; width:0; background:#fff; border-radius:3px; transition:width .2s}
+.sv-bar.done i{width:100%}
+.sv-bar.now i{width:100%}
+.sv-top{position:absolute; top:72px; left:14px; right:14px; display:flex; align-items:center; gap:9px; color:#fff; z-index:6}
+.sv-top img{width:32px; height:32px; border-radius:50%; object-fit:cover; border:1.5px solid rgba(255,255,255,.85)}
+.sv-name{font-size:13.5px; font-weight:600}
+.sv-time{font-size:12px; opacity:.75}
+.sv-close{margin-left:auto; cursor:pointer; display:flex}
+.sv-tap{position:absolute; top:110px; bottom:70px; width:38%; z-index:5; cursor:pointer}
+.sv-tap.left{left:0}
+.sv-tap.right{right:0; width:62%}
+.sv-own{
+  position:absolute; left:0; right:0; bottom:0; height:74px; display:flex; align-items:center;
+  justify-content:space-around; z-index:6; color:#fff; background:#000;
+  padding-bottom:12px; border-radius:0 0 48px 48px;
+}
+.sv-own div{display:flex; flex-direction:column; align-items:center; gap:5px; font-size:11px; font-weight:600}
+.sv-own svg{stroke:#fff; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.story-viewer.mine .sv-slide::after{background:linear-gradient(rgba(0,0,0,.5) 0 16%, transparent 34% 100%)}
+.story-viewer.mine .sv-cap{bottom:96px}
+.sv-input{position:absolute; left:12px; right:12px; bottom:22px; display:flex; align-items:center; gap:10px; z-index:6}
+.sv-input .sv-box{flex:1; height:40px; border:1px solid rgba(255,255,255,.6); border-radius:999px; display:flex; align-items:center; padding:0 16px; color:rgba(255,255,255,.85); font-size:13.5px}
+.sv-input svg{stroke:#fff; fill:none; stroke-width:1.8}
+
+/* 게시물 상세 */
+.post-modal{position:absolute; top:54px; left:0; right:0; bottom:0; background:#fff; z-index:200; display:none; flex-direction:column; border-radius:0 0 48px 48px; overflow:hidden}
+.post-modal.show{display:flex; animation:slideUp .22s ease-out}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-header{padding:0 16px; height:46px; display:flex; align-items:center; border-bottom:.5px solid #dbdbdb; font-weight:700; font-size:15px; flex-shrink:0}
+.modal-back-btn{background:transparent; border:none; padding:0; margin-right:14px; cursor:pointer; display:flex; align-items:center; -webkit-tap-highlight-color:transparent}
+.modal-scroll{flex:1; overflow-y:auto; padding-bottom:20px; scrollbar-width:none}
+.modal-scroll::-webkit-scrollbar{display:none}
+
+/* 하단 탭 */
+.bottom-nav{height:50px; background:#fff; border-top:.5px solid #dbdbdb; display:flex; justify-content:space-around; align-items:center; position:absolute; bottom:0; width:100%; z-index:100; padding-bottom:14px}
+.nav-item{cursor:pointer; padding:10px; display:flex; align-items:center; justify-content:center; position:relative}
+.nav-item svg{stroke:#262626; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
+.nav-item.active svg{stroke-width:2.6}
+.nav-item.active svg.fillable{fill:#262626}
+.my-profile-icon{width:25px; height:25px; border-radius:50%; overflow:hidden; border:1px solid #dbdbdb}
+.my-profile-icon.active{border:2px solid #262626}
+.my-profile-icon img{width:100%; height:100%; object-fit:cover}
+.phone-frame .icon{fill:none; stroke:#262626; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
+.screen-area.dm-mode .bottom-nav{display:none}
+.screen-area.reels-mode{background:#000}
+.screen-area.reels-mode .status-bar{color:#fff}
+.screen-area.reels-mode .status-bar svg{fill:#fff}
+.screen-area.reels-mode .bottom-nav{background:#000; border-top-color:#2a2a2a}
+.screen-area.reels-mode .nav-item svg{stroke:#fff}
+.screen-area.reels-mode .nav-item.active svg.fillable{fill:#fff}
+.screen-area.reels-mode .my-profile-icon{border-color:#555}
+.screen-area.reels-mode .my-profile-icon.active{border-color:#fff}
 </style>
 </head>
-<body>
+<body data-view="desktop" data-pane="editor">
 
-<div class="control-panel">
-    <h1>✨ 슈스타그램 메이커</h1>
-    
-    <div class="section-title">1. 프로필 정보</div>
-    <div class="input-group">
-        <label>아이디</label>
-        <input type="text" id="inp-username" value="아이디">
-    </div>
-    <div class="input-group">
-        <label>프로필 사진 (파일 선택)</label>
-        <input type="file" id="inp-profile-file" accept="image/*">
-        <input type="hidden" id="hidden-profile-pic" value="https://via.placeholder.com/150">
-    </div>
-    <div class="input-group">
-        <label>소개글</label>
-        <textarea id="inp-bio" rows="3">소개글을 입력하세요</textarea>
-    </div>
-    <div class="input-row">
-        <div class="input-group"><label>팔로워</label><input type="text" id="inp-followers" value="0"></div>
-        <div class="input-group"><label>팔로잉</label><input type="text" id="inp-following" value="0"></div>
-    </div>
-    <div class="input-group" style="display: flex; align-items: center;">
-        <input type="checkbox" id="inp-private" checked>
-        <label for="inp-private" style="margin: 0; font-size: 13px; cursor: pointer;">비공개 계정 (자물쇠 표시)</label>
-    </div>
-    <button id="btn-update-profile" class="btn-secondary">프로필 적용하기</button>
+<div class="app">
+  <aside class="pane-editor" id="pane-editor">
+    <header class="editor-top">
+      <div class="brand"><span class="brand-emoji">🩵</span><h1>슈스타그램 메이커</h1></div>
+      <span class="save-pill" id="save-pill"><span class="dot"></span><span id="save-text">불러오는 중</span></span>
+      <div class="view-toggle" id="view-toggle">
+        <button type="button" data-view="desktop" title="컴퓨터 화면">🖥</button>
+        <button type="button" data-view="mobile" title="모바일 화면">📱</button>
+      </div>
+    </header>
 
-    <div class="section-title">2. 항목 추가하기</div>
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
-        <div class="input-group">
-            <label>유형 선택</label>
-            <select id="inp-type">
-                <option value="post">피드 게시물</option>
-                <option value="story">스토리</option>
-                <option value="highlight">하이라이트</option>
-            </select>
+    <nav class="tabs" id="tabs">
+      <button type="button" data-tab="profile" class="active">프로필</button>
+      <button type="button" data-tab="posts">게시물<i class="badge" id="badge-posts">0</i></button>
+      <button type="button" data-tab="story">스토리<i class="badge" id="badge-story">0</i></button>
+      <button type="button" data-tab="friends">친구<i class="badge" id="badge-friends">0</i></button>
+      <button type="button" data-tab="explore">탐색<i class="badge" id="badge-explore">0</i></button>
+      <button type="button" data-tab="export">저장</button>
+    </nav>
+
+    <div class="editor-scroll" id="editor-scroll">
+
+      <!-- ===== 프로필 ===== -->
+      <section class="panel active" data-panel="profile">
+        <div class="sec-title">계정 정보</div>
+        <div class="field">
+          <label>프로필 사진</label>
+          <div class="drop" id="drop-profile">
+            <img class="drop-thumb round" id="thumb-profile" alt="">
+            <div class="drop-txt"><b>사진 선택 또는 드래그</b>업로드하면 자르기 창이 열려요</div>
+            <button type="button" class="recrop" data-recrop="profile" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-profile-file" accept="image/*">
+          </div>
         </div>
-        <div class="input-group">
-            <label>사진 업로드</label>
-            <input type="file" id="inp-item-file" accept="image/*">
-            <input type="hidden" id="hidden-item-pic">
-            <div id="edit-img-notice" style="display:none; color:#0095f6; font-size:11px; margin-top:4px;">* 이미지가 저장되어 있습니다. 변경하려면 새로 업로드하세요.</div>
+        <div class="field"><label>아이디</label><input type="text" id="inp-username" placeholder="username" maxlength="30"></div>
+        <div class="field"><label>이름 (표시 이름)</label><input type="text" id="inp-name" placeholder="비워두면 표시되지 않아요" maxlength="30"></div>
+        <div class="field"><label>소개글</label><textarea id="inp-bio" rows="3" placeholder="소개글을 입력하세요"></textarea></div>
+        <div class="row">
+          <div class="field"><label>팔로워</label><input type="text" id="inp-followers" placeholder="0"></div>
+          <div class="field"><label>팔로잉</label><input type="text" id="inp-following" placeholder="0"></div>
         </div>
-        <div class="input-group" id="wrap-text1">
-            <label id="label-text1">내용 (캡션)</label>
-            <textarea id="inp-item-text1" rows="2" placeholder="문구를 입력하세요..."></textarea>
+        <div class="switch-row"><span>🔒 비공개 계정</span><label class="switch"><input type="checkbox" id="inp-private"><i></i></label></div>
+        <div class="sec-title">상단 표시</div>
+        <div class="row">
+          <div class="field"><label>알림(하트) 개수</label><input type="text" id="inp-noti" placeholder="예: 3 (비우면 숨김)"></div>
+          <div class="field"><label>상태바 시각</label><input type="text" id="inp-time" placeholder="9:41"></div>
         </div>
-        <div class="input-row" id="wrap-text2">
-            <div class="input-group"><label>작성일</label><input type="text" id="inp-item-date" value="방금 전"></div>
-            <div class="input-group"><label>좋아요 수</label><input type="text" id="inp-item-like" value="0개"></div>
+      </section>
+
+      <!-- ===== 내 게시물 ===== -->
+      <section class="panel" data-panel="posts">
+        <div class="segment" id="post-kind-seg" style="margin-top:16px">
+          <button type="button" data-kind="post" class="active">피드 게시물</button>
+          <button type="button" data-kind="reel">릴스</button>
         </div>
-        <button id="btn-add-item">추가</button>
+
+        <div id="post-block">
+        <div class="sec-title" id="post-form-title">새 게시물</div>
+        <div class="field">
+          <label>사진</label>
+          <div class="drop" id="drop-post">
+            <img class="drop-thumb" id="thumb-post" alt="">
+            <div class="drop-txt"><b id="drop-post-title">사진 선택 또는 드래그</b><span id="drop-post-sub">클릭해서 이미지를 올려주세요</span></div>
+            <button type="button" class="recrop" data-recrop="post" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-post-file" accept="image/*">
+          </div>
+        </div>
+        <div class="field"><label>내용 (캡션)</label><textarea id="inp-post-text" rows="2" placeholder="문구를 입력하세요..."></textarea></div>
+        <div class="row">
+          <div class="field"><label>작성일</label><input type="text" id="inp-post-date" placeholder="방금 전"></div>
+          <div class="field"><label>좋아요</label><input type="text" id="inp-post-like" placeholder="0개"></div>
+        </div>
+        <div class="field"><label>댓글 수 (비우면 실제 댓글 개수)</label><input type="text" id="inp-post-comment" placeholder="예: 24"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-submit-post">＋ 추가하기</button>
+          <button class="btn btn-ghost" id="btn-cancel-post" style="display:none; flex:0 0 78px">취소</button>
+        </div>
+        <div class="sec-title">내 게시물 목록</div>
+        <div id="post-list"></div>
+        <p class="hint">게시물을 <b>누르면 댓글</b>을 달 수 있어요. ↑↓ 순서 · ⧉ 복사 · ✏️ 수정 · 🗑 삭제</p>
+
+        <div id="post-comment-editor" style="display:none">
+          <div class="sec-title"><span id="post-comment-title">댓글</span></div>
+          <div id="post-comment-list"></div>
+          <div class="field"><label>작성자</label><div class="chips" id="post-comment-who"></div></div>
+          <div class="field"><label>댓글 내용</label><input type="text" id="inp-post-comment-text" placeholder="댓글을 입력하고 Enter"></div>
+          <div class="btn-row"><button class="btn btn-primary" id="btn-add-post-comment">＋ 댓글 달기</button></div>
+          <p class="hint">작성자는 <b>친구</b> 탭에서 추가한 친구 중에서 고를 수 있어요.</p>
+        </div>
+        </div>
+
+        <div id="reel-block" style="display:none">
+          <div class="note">릴스는 <b>세로(9:16) 사진</b>으로 넣으면 영상 느낌이 나요. 릴스는 홈 피드에는 뜨지 않고 <b>릴스 탭</b>에만 올라가요.</div>
+          <div class="sec-title" id="reel-form-title">새 릴스</div>
+          <div class="field">
+            <label>세로 사진</label>
+            <div class="drop" id="drop-reel">
+              <img class="drop-thumb" id="thumb-reel" alt="">
+              <div class="drop-txt"><b id="drop-reel-title">사진 선택 또는 드래그</b><span id="drop-reel-sub">9:16 세로 사진을 권장해요</span></div>
+              <button type="button" class="recrop" data-recrop="reel" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-reel-file" accept="image/*">
+            </div>
+          </div>
+          <div class="field"><label>내용 (캡션)</label><textarea id="inp-reel-text" rows="2" placeholder="릴스 문구를 입력하세요..."></textarea></div>
+          <div class="row">
+            <div class="field"><label>좋아요</label><input type="text" id="inp-reel-like" placeholder="1,204개"></div>
+            <div class="field"><label>댓글 수</label><input type="text" id="inp-reel-comment" placeholder="24"></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>음악 / 오디오</label><input type="text" id="inp-reel-music" placeholder="원본 오디오"></div>
+            <div class="field"><label>조회수</label><input type="text" id="inp-reel-views" placeholder="12.4만"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-submit-reel">＋ 릴스 추가</button>
+            <button class="btn btn-ghost" id="btn-cancel-reel" style="display:none; flex:0 0 78px">취소</button>
+          </div>
+          <div class="sec-title">내 릴스 항목</div>
+          <div id="reel-list"></div>
+        </div>
+      </section>
+
+      <!-- ===== 스토리 / 하이라이트 ===== -->
+      <section class="panel" data-panel="story">
+        <div class="sec-title" id="mystory-form-title">일반 스토리</div>
+        <div class="note">일반 스토리를 올리면 홈 화면 내 프로필에 알록달록한 원이 생기고, 눌러서 볼 수 있어요.</div>
+        <div class="field">
+          <div class="drop" id="drop-mystory">
+            <img class="drop-thumb" id="thumb-mystory" alt="">
+            <div class="drop-txt"><b id="drop-mystory-title">사진 선택 또는 드래그</b><span id="drop-mystory-sub">9:16 비율을 권장해요</span></div>
+            <button type="button" class="recrop" data-recrop="mystory" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-mystory-file" accept="image/*">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label>문구 (선택)</label><input type="text" id="inp-mystory-text" placeholder="스토리에 얹을 문구"></div>
+          <div class="field"><label>시간</label><input type="text" id="inp-mystory-time" placeholder="3시간"></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-add-mystory">＋ 일반 스토리 추가</button>
+          <button class="btn btn-ghost" id="btn-cancel-mystory" style="display:none; flex:0 0 78px">취소</button>
+        </div>
+
+        <div class="sec-title">내 스토리 항목</div>
+        <div id="mystory-list"></div>
+
+        <div class="sec-title" id="hl-form-title">하이라이트</div>
+        <div class="note">하이라이트에 들어가는 스토리는 <b>일반 스토리와 별개</b>예요. 먼저 하이라이트를 만든 다음, 아래 <b>내 하이라이트 항목</b>에서 하이라이트를 눌러 <b>‘담긴 스토리’</b> 칸에서 사진을 추가해 주세요.</div>
+        <div class="field"><label>하이라이트 이름</label><input type="text" id="inp-hl-title" placeholder="예: 무대, 일상" maxlength="20"></div>
+        <div class="field">
+          <label>커버 사진 (선택)</label>
+          <div class="drop" id="drop-hl">
+            <img class="drop-thumb round" id="thumb-hl" alt="">
+            <div class="drop-txt"><b id="drop-hl-title">커버 선택 또는 드래그</b><span id="drop-hl-sub">비우면 첫 스토리가 커버가 돼요</span></div>
+            <button type="button" class="recrop" data-recrop="hl" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-hl-file" accept="image/*">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-submit-hl">＋ 하이라이트 만들기</button>
+          <button class="btn btn-ghost" id="btn-cancel-hl" style="display:none; flex:0 0 78px">취소</button>
+        </div>
+        <div class="sec-title">내 하이라이트 항목</div>
+        <div id="hl-list"></div>
+
+        <div id="hl-editor" style="display:none">
+          <div class="sec-title"><span id="hl-editor-title">하이라이트 스토리</span></div>
+          <div class="field">
+            <div class="drop" id="drop-hlstory">
+              <img class="drop-thumb" id="thumb-hlstory" alt="">
+              <div class="drop-txt"><b id="drop-hlstory-title">사진 선택 또는 드래그</b><span id="drop-hlstory-sub">여러 장을 넣으면 모아보기가 돼요</span></div>
+              <button type="button" class="recrop" data-recrop="hlstory" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-hlstory-file" accept="image/*">
+            </div>
+          </div>
+          <div class="row">
+            <div class="field"><label>문구 (선택)</label><input type="text" id="inp-hlstory-text" placeholder="스토리 문구"></div>
+            <div class="field"><label>시간</label><input type="text" id="inp-hlstory-time" placeholder="1주"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-add-hlstory">＋ 스토리 담기</button>
+            <button class="btn btn-ghost" id="btn-cancel-hlstory" style="display:none; flex:0 0 78px">취소</button>
+          </div>
+          <div id="hlstory-list" style="margin-top:12px"></div>
+          <p class="hint">프로필에서 하이라이트를 누르면 담긴 스토리를 순서대로 볼 수 있어요.</p>
+        </div>
+      </section>
+
+      <!-- ===== 친구 ===== -->
+      <section class="panel" data-panel="friends">
+        <div class="sec-title" id="friend-form-title">친구 추가</div>
+        <div class="field">
+          <label>친구 프로필 사진</label>
+          <div class="drop" id="drop-friend">
+            <img class="drop-thumb round" id="thumb-friend" alt="">
+            <div class="drop-txt"><b id="drop-friend-title">사진 선택 또는 드래그</b><span id="drop-friend-sub">비워두면 기본 이미지가 들어가요</span></div>
+            <button type="button" class="recrop" data-recrop="friend" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-friend-file" accept="image/*">
+          </div>
+        </div>
+        <div class="field"><label>아이디 / 이름</label><input type="text" id="inp-friend-name" placeholder="예: shoo_bestie" maxlength="30"></div>
+        <div class="row">
+          <div class="field"><label>DM 목록 시간</label><input type="text" id="inp-friend-time" placeholder="방금"></div>
+          <div class="field"><label>활동 상태</label><input type="text" id="inp-friend-active" placeholder="활동 중"></div>
+        </div>
+        <div class="switch-row"><span>🔵 읽지 않은 메시지 표시</span><label class="switch"><input type="checkbox" id="inp-friend-unread"><i></i></label></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-submit-friend">＋ 친구 추가</button>
+          <button class="btn btn-ghost" id="btn-cancel-friend" style="display:none; flex:0 0 78px">취소</button>
+        </div>
+
+        <div class="sec-title">친구 목록</div>
+        <div id="friend-list"></div>
+
+        <div id="friend-editor" style="display:none">
+          <div class="sec-title"><span id="friend-editor-title">친구</span></div>
+          <div class="segment" id="friend-seg">
+            <button type="button" data-sub="stories" class="active">스토리</button>
+            <button type="button" data-sub="posts">게시물</button>
+            <button type="button" data-sub="reels">릴스</button>
+            <button type="button" data-sub="messages">메시지</button>
+          </div>
+
+          <!-- 친구 스토리 -->
+          <div class="sub" data-sub="stories">
+            <div class="note">친구들의 스토리 미리보기를 추가할 수 있습니다.</div>
+            <div class="field">
+              <div class="drop" id="drop-fstory">
+                <img class="drop-thumb" id="thumb-fstory" alt="">
+                <div class="drop-txt"><b id="drop-fstory-title">사진 선택 또는 드래그</b><span id="drop-fstory-sub">9:16 비율을 권장해요</span></div>
+                <button type="button" class="recrop" data-recrop="fstory" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-fstory-file" accept="image/*">
+              </div>
+            </div>
+            <div class="row">
+              <div class="field"><label>문구 (선택)</label><input type="text" id="inp-fstory-text" placeholder="스토리 문구"></div>
+              <div class="field"><label>시간</label><input type="text" id="inp-fstory-time" placeholder="2시간"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="btn-add-fstory">＋ 스토리 추가</button>
+              <button class="btn btn-ghost" id="btn-cancel-fstory" style="display:none; flex:0 0 78px">취소</button>
+            </div>
+            <div class="sec-title">친구 스토리 항목</div>
+            <div id="fstory-list"></div>
+          </div>
+
+          <!-- 친구 게시물 -->
+          <div class="sub" data-sub="posts" style="display:none">
+            <div class="note">친구 게시물은 <b>홈 피드에만</b> 보이고, 내 프로필 그리드에는 나오지 않아요.</div>
+            <div class="field">
+              <div class="drop" id="drop-fpost">
+                <img class="drop-thumb" id="thumb-fpost" alt="">
+                <div class="drop-txt"><b id="drop-fpost-title">사진 선택 또는 드래그</b><span id="drop-fpost-sub">클릭해서 이미지를 올려주세요</span></div>
+                <button type="button" class="recrop" data-recrop="fpost" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-fpost-file" accept="image/*">
+              </div>
+            </div>
+            <div class="field"><label>내용 (캡션)</label><textarea id="inp-fpost-text" rows="2" placeholder="문구를 입력하세요..."></textarea></div>
+            <div class="row">
+              <div class="field"><label>작성일</label><input type="text" id="inp-fpost-date" placeholder="방금 전"></div>
+              <div class="field"><label>좋아요</label><input type="text" id="inp-fpost-like" placeholder="0개"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="btn-add-fpost">＋ 게시물 추가</button>
+              <button class="btn btn-ghost" id="btn-cancel-fpost" style="display:none; flex:0 0 78px">취소</button>
+            </div>
+            <div class="sec-title">친구 게시물 항목</div>
+            <div id="fpost-list"></div>
+
+            <div id="fpost-comment-editor" style="display:none">
+              <div class="sec-title"><span id="fpost-comment-title">댓글</span></div>
+              <div id="fpost-comment-list"></div>
+              <div class="field"><label>작성자</label><div class="chips" id="fpost-comment-who"></div></div>
+              <div class="field"><label>댓글 내용</label><input type="text" id="inp-fpost-comment-text" placeholder="댓글을 입력하고 Enter"></div>
+              <div class="btn-row"><button class="btn btn-primary" id="btn-add-fpost-comment">＋ 댓글 달기</button></div>
+            </div>
+          </div>
+
+          <!-- 친구 릴스 -->
+          <div class="sub" data-sub="reels" style="display:none">
+            <div class="note">친구 릴스도 <b>릴스 탭</b>에만 표시돼요.</div>
+            <div class="field">
+              <div class="drop" id="drop-freel">
+                <img class="drop-thumb" id="thumb-freel" alt="">
+                <div class="drop-txt"><b id="drop-freel-title">사진 선택 또는 드래그</b><span id="drop-freel-sub">9:16 세로 사진을 권장해요</span></div>
+                <button type="button" class="recrop" data-recrop="freel" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-freel-file" accept="image/*">
+              </div>
+            </div>
+            <div class="field"><label>내용 (캡션)</label><textarea id="inp-freel-text" rows="2" placeholder="릴스 문구"></textarea></div>
+            <div class="row">
+              <div class="field"><label>좋아요</label><input type="text" id="inp-freel-like" placeholder="1,204개"></div>
+              <div class="field"><label>조회수</label><input type="text" id="inp-freel-views" placeholder="12.4만"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="btn-add-freel">＋ 릴스 추가</button>
+              <button class="btn btn-ghost" id="btn-cancel-freel" style="display:none; flex:0 0 78px">취소</button>
+            </div>
+            <div class="sec-title">친구 릴스 항목</div>
+            <div id="freel-list"></div>
+          </div>
+
+          <!-- 친구 메시지 -->
+          <div class="sub" data-sub="messages" style="display:none">
+            <div id="fmsg-list" style="margin-top:12px"></div>
+            <div class="field">
+              <label>보낸 사람</label>
+              <div class="segment" id="sender-segment">
+                <button type="button" data-from="them" class="active">친구</button>
+                <button type="button" data-from="me">나</button>
+              </div>
+            </div>
+            <div class="field"><label>메시지 내용</label><textarea id="inp-msg-text" rows="2" placeholder="메시지를 입력하고 Enter"></textarea></div>
+            <div class="field"><label>시간 (선택)</label><input type="text" id="inp-msg-time" placeholder="예: 오후 9:41"></div>
+            <div class="btn-row"><button class="btn btn-primary" id="btn-add-msg">＋ 메시지 추가</button></div>
+            <p class="hint">홈 화면 오른쪽 위 <b>종이비행기</b>를 누르면 DM이 열려요.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 탐색(추천 피드) ===== -->
+      <section class="panel" data-panel="explore">
+        <div class="sec-title">추천 피드 사진</div>
+        <div class="note">돋보기(탐색) 탭에 뜨는 <b>추천 게시물</b>이에요. 내 게시물과는 따로 관리돼요.</div>
+        <div class="field">
+          <div class="drop" id="drop-explore">
+            <img class="drop-thumb" id="thumb-explore" alt="">
+            <div class="drop-txt"><b id="drop-explore-title">사진 선택 또는 드래그</b><span id="drop-explore-sub">정사각형 이미지를 권장해요</span></div>
+            <button type="button" class="recrop" data-recrop="explore" style="display:none">✂ 다시 자르기</button>
+            <input type="file" id="inp-explore-file" accept="image/*">
+          </div>
+        </div>
+        <div class="btn-row"><button class="btn btn-primary" id="btn-add-explore">＋ 추천 게시물 추가</button></div>
+        <div id="explore-list" style="margin-top:12px"></div>
+      </section>
+
+      <!-- ===== 저장 ===== -->
+      <section class="panel" data-panel="export">
+        <div class="sec-title">내보내기</div>
+        <button class="btn btn-primary" id="btn-download-html">📄 HTML 파일로 저장</button>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="btn-export-json">⬇ 백업 파일</button>
+          <button class="btn btn-ghost" id="btn-import-json">⬆ 백업 불러오기</button>
+        </div>
+        <input type="file" id="inp-import-json" accept="application/json,.json" style="display:none">
+        <div class="sec-title">초기화</div>
+        <button class="btn btn-danger" id="btn-reset">전체 초기화</button>
+        <p class="hint">작업 내용은 이 브라우저에 <b>자동 저장</b>돼요. 다른 기기에서 이어서 하거나 영구 보관하려면 <b>백업 파일</b>을 내려받아 두세요.</p>
+
+        <div class="sec-title">안내사항</div>
+        <ul class="notice">
+          <li>IndexedDB를 이용해 편집 환경을 저장합니다. 해당 데이터 삭제 시 함께 날아갑니다.</li>
+          <li>업데이트 기록 등은 포스타입 및 트위터 참고.</li>
+          <li>문의 및 제보는 포스타입 메시지 혹은 트위터로 부탁드립니다.</li>
+          <li>취미 생활인지라 답장이 느릴 수 있습니다.</li>
+        </ul>
+
+        <div class="sec-title">연락망</div>
+        <div class="links">
+          <a class="link-row" href="https://www.postype.com/@shoongtbdp" target="_blank" rel="noopener noreferrer">
+            <span class="link-ico">📮</span>
+            <span class="link-txt"><b>포스타입</b>postype.com/@shoongtbdp</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+          <a class="link-row" href="https://x.com/shoongtbdp" target="_blank" rel="noopener noreferrer">
+            <span class="link-ico">🐦</span>
+            <span class="link-txt"><b>트위터</b>x.com/shoongtbdp</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        </div>
+      </section>
+
     </div>
+  </aside>
 
-    <div class="section-title">3. 추가된 항목 관리</div>
-    <div style="font-size:11px; color:#888; margin-bottom:10px;">수정을 원하시면 '수정'을 눌러 위 입력창으로 불러온 뒤 다시 추가하세요.</div>
-    <div id="manage-list-container" class="manage-list"></div>
-
-    <div class="section-title">4. 최종 완성</div>
-    <button id="btn-download-html" class="btn-success">HTML 파일로 다운로드</button>
-</div>
-
-<div class="preview-panel">
-    <div class="phone-frame" id="export-target">
+  <main class="stage" id="stage">
+    <div class="phone-wrap" id="phone-wrap">
+      <div class="phone-frame" id="export-target">
         <div class="dynamic-island"></div>
         <div class="screen-area">
-            
-            <div class="status-bar">
-                <div style="display: flex; gap: 6px;">
-                    <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><path d="M14 0H4C1.79086 0 0 1.79086 0 4V8C0 10.2091 1.79086 12 4 12H14C16.2091 12 18 10.2091 18 8V4C18 1.79086 16.2091 0 14 0Z"/></svg>
-                </div>
+
+          <div class="status-bar">
+            <div id="sb-time">9:41</div>
+            <div class="sb-right">
+              <svg width="17" height="12" viewBox="0 0 17 12" fill="#000"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="4.5" y="5.5" width="3" height="6.5" rx="1"/><rect x="9" y="3" width="3" height="9" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+              <svg width="18" height="12" viewBox="0 0 18 12" fill="#000"><path d="M14 0H4C1.79086 0 0 1.79086 0 4V8C0 10.2091 1.79086 12 4 12H14C16.2091 12 18 10.2091 18 8V4C18 1.79086 16.2091 0 14 0Z"/></svg>
             </div>
+          </div>
 
-            <div id="page-profile" class="content-container">
-                <header class="app-header">
-                    <div class="username"><svg id="lock-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px; margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span class="global-username">아이디</span></div>
-                    <div class="header-actions">
-                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M12 7v10M7 12h10"></path></svg>
-                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                    </div>
-                </header>
-
-                <section class="profile-info">
-                    <div class="profile-img-wrap">
-                        <img src="https://via.placeholder.com/150" class="profile-img global-profile-pic">
-                        <div class="my-story-badge">+</div>
-                    </div>
-                    <div class="stats-group">
-                        <div class="stat-item"><span class="stat-num" id="display-post-count">0</span><span class="stat-label">게시물</span></div>
-                        <div class="stat-item"><span class="stat-num" id="display-followers">0</span><span class="stat-label">팔로워</span></div>
-                        <div class="stat-item"><span class="stat-num" id="display-following">0</span><span class="stat-label">팔로잉</span></div>
-                    </div>
-                </section>
-                
-                <section class="bio-area" id="display-bio">소개글을 입력하세요</section>
-                
-                <section class="action-btns">
-                    <div class="btn-profile">프로필 편집</div>
-                    <div class="btn-profile">프로필 공유</div>
-                </section>
-
-                <section class="highlights" id="display-highlights">
-                </section>
-
-                <div class="grid-tabs">
-                    <div class="grid-tab active"><svg class="icon" viewBox="0 0 24 24" width="24" height="24" stroke="none" fill="#262626"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="#262626" stroke-width="2" fill="none"></rect><line x1="3" y1="9" x2="21" y2="9" stroke="#262626" stroke-width="2"></line><line x1="9" y1="21" x2="9" y2="9" stroke="#262626" stroke-width="2"></line></svg></div>
-                    <div class="grid-tab"><svg class="icon" viewBox="0 0 24 24" width="24" height="24" stroke="#8e8e8e"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="M15 5l4 4"></path></svg></div>
-                    <div class="grid-tab"><svg class="icon" viewBox="0 0 24 24" width="24" height="24" stroke="#8e8e8e"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>
-                </div>
-
-                <div class="photo-grid" id="display-grid">
-                </div>
+          <!-- 프로필 -->
+          <div id="page-profile" class="page on pad-nav">
+            <header class="app-header">
+              <div class="username">
+                <svg id="lock-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span class="global-username">아이디</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="3" stroke-linecap="round" style="margin-top:3px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="header-actions">
+                <svg class="icon" width="23" height="23" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M12 7v10M7 12h10"></path></svg>
+                <svg class="icon" width="23" height="23" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+              </div>
+            </header>
+            <section class="profile-info">
+              <div class="profile-img-wrap" id="my-profile-ring">
+                <img class="profile-img global-profile-pic" alt="">
+                <div class="my-story-badge" id="my-story-plus">+</div>
+              </div>
+              <div class="stats-group">
+                <div><span class="stat-num" id="display-post-count">0</span><span class="stat-label">게시물</span></div>
+                <div><span class="stat-num" id="display-followers">0</span><span class="stat-label">팔로워</span></div>
+                <div><span class="stat-num" id="display-following">0</span><span class="stat-label">팔로잉</span></div>
+              </div>
+            </section>
+            <section class="bio-area"><span class="bio-name" id="display-name"></span><span id="display-bio"></span></section>
+            <section class="action-btns">
+              <div class="btn-profile">프로필 편집</div>
+              <div class="btn-profile">프로필 공유</div>
+              <div class="btn-profile icon-only">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+              </div>
+            </section>
+            <section class="highlights" id="display-highlights"></section>
+            <div class="grid-tabs">
+              <div class="grid-tab active" id="gtab-posts" onclick="showGrid('posts')"><svg viewBox="0 0 24 24" width="23" height="23"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#262626" stroke-width="2" fill="none"></rect><line x1="3" y1="9" x2="21" y2="9" stroke="#262626" stroke-width="2"></line><line x1="9" y1="21" x2="9" y2="9" stroke="#262626" stroke-width="2"></line></svg></div>
+              <div class="grid-tab" id="gtab-reels" onclick="showGrid('reels')"><svg class="icon" viewBox="0 0 24 24" width="23" height="23"><rect x="2" y="2" width="20" height="20" rx="5"></rect><line x1="2" y1="8" x2="22" y2="8"></line><line x1="8" y1="2" x2="11" y2="8"></line><line x1="15" y1="2" x2="18" y2="8"></line><polygon points="10 12 15.5 15 10 18"></polygon></svg></div>
+              <div class="grid-tab" id="gtab-tagged" onclick="showGrid('tagged')"><svg class="icon" viewBox="0 0 24 24" width="23" height="23"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
             </div>
+            <div class="photo-grid" id="display-grid"></div>
+            <div class="photo-grid grid-reels" id="display-reel-grid" style="display:none"></div>
+            <div id="display-tagged" style="display:none"><div class="grid-empty" style="padding:60px 20px">사람이 회원님을 사진에<br>태그하면 여기에 표시됩니다</div></div>
+          </div>
 
-            <div id="page-home" class="content-container">
-                <header class="app-header home-header">
-                    <div class="app-logo">Shoostargram</div>
-                    <div class="header-actions">
-                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                    </div>
-                </header>
-
-                <div class="story-container" id="display-stories">
-                    <div class="story-item" id="my-story-btn">
-                        <div class="story-ring empty">
-                            <img src="https://via.placeholder.com/150" class="global-profile-pic">
-                            <div class="my-story-badge" style="width:20px; height:20px; font-size:14px; bottom:-2px; right:-2px;">+</div>
-                        </div>
-                        <span class="story-name" style="color:#737373;">내 스토리</span>
-                    </div>
+          <!-- 홈 -->
+          <div id="page-home" class="page pad-nav">
+            <header class="app-header home-header">
+              <div class="app-logo">Shoostargram</div>
+              <div class="header-actions">
+                <div class="icon-wrap">
+                  <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  <span class="ig-badge" id="noti-badge" style="display:none">1</span>
                 </div>
-
-                <div id="display-feed">
+                <div class="icon-wrap" onclick="showPage('dm')" style="cursor:pointer">
+                  <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  <span class="ig-badge" id="dm-badge" style="display:none">1</span>
                 </div>
-                <div style="text-align:center; padding: 30px; color:#8e8e8e; font-size:12px;">모든 게시물을 확인했습니다</div>
+              </div>
+            </header>
+            <div class="story-container" id="display-stories"></div>
+            <div id="display-feed"></div>
+          </div>
+
+          <!-- 탐색 -->
+          <div id="page-explore" class="page pad-nav">
+            <div style="height:8px"></div>
+            <div class="search-bar">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8e8e8e" stroke-width="2.4"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              검색
             </div>
+            <div class="photo-grid" id="display-explore"></div>
+          </div>
 
-            <div class="post-modal" id="postModal">
-                <div class="modal-header">
-                    <button class="modal-back-btn" onclick="closeModal()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                    </button>
-                    <div style="font-size: 14px; font-weight:700; text-transform:uppercase; color:#262626; white-space: nowrap;">게시물</div>
-                </div>
-                <div class="modal-scroll" id="modal-feed-content">
-                </div>
+          <!-- 릴스 -->
+          <div id="page-reels" class="page"><div class="reels-scroll" id="display-reels"></div></div>
+
+          <!-- DM -->
+          <div id="page-dm" class="page">
+            <header class="dm-header">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer" onclick="showPage('home')"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              <div class="dm-title"><span class="global-username">아이디</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="3" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <svg class="icon" width="23" height="23" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>
+            </header>
+            <div style="padding:0 14px 10px"><div class="search-bar" style="margin:0">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8e8e8e" stroke-width="2.4"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              검색
+            </div></div>
+            <div class="dm-tabs"><b>메시지</b><span>요청</span></div>
+            <div class="dm-list" id="display-dm-list"></div>
+          </div>
+
+          <div id="thread-host"></div>
+          <div id="story-host"></div>
+
+          <!-- 게시물 상세 -->
+          <div class="post-modal" id="postModal">
+            <div class="modal-header">
+              <button class="modal-back-btn" onclick="closeModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              </button>
+              <div style="font-size:14px; font-weight:700">게시물</div>
             </div>
+            <div class="modal-scroll" id="modal-feed-content"></div>
+          </div>
 
-            <nav class="bottom-nav">
-                <div class="nav-item" onclick="switchTab('home')">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2" id="icon-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                </div>
-                <div class="nav-item"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-                <div class="nav-item"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg></div>
-                <div class="nav-item"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></div>
-                <div class="nav-item" onclick="switchTab('profile')">
-                    <div class="my-profile-icon active" id="icon-profile-wrap"><img src="https://via.placeholder.com/150" class="global-profile-pic"></div>
-                </div>
-            </nav>
+          <!-- 하단 탭 -->
+          <nav class="bottom-nav">
+            <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+              <svg viewBox="0 0 24 24" width="24" height="24" class="fillable"><path d="M3 9.5l9-7 9 7V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 13 15 13 15 22" fill="#fff"></polyline></svg>
+            </div>
+            <div class="nav-item" id="nav-reels" onclick="showPage('reels')">
+              <svg viewBox="0 0 24 24" width="24" height="24"><rect x="2" y="2" width="20" height="20" rx="5"></rect><line x1="2" y1="8" x2="22" y2="8"></line><line x1="8" y1="2" x2="11" y2="8"></line><line x1="15" y1="2" x2="18" y2="8"></line><polygon points="10 12 15.5 15 10 18"></polygon></svg>
+            </div>
+            <div class="nav-item" id="nav-create">
+              <svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="3" width="18" height="18" rx="5"></rect><line x1="12" y1="8.5" x2="12" y2="15.5"></line><line x1="8.5" y1="12" x2="15.5" y2="12"></line></svg>
+            </div>
+            <div class="nav-item" id="nav-explore" onclick="showPage('explore')">
+              <svg viewBox="0 0 24 24" width="24" height="24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <div class="nav-item" id="nav-profile" onclick="showPage('profile')">
+              <div class="my-profile-icon active" id="icon-profile-wrap"><img class="global-profile-pic" alt=""></div>
+            </div>
+          </nav>
+
         </div>
+      </div>
     </div>
+  </main>
 </div>
 
+<nav class="pane-switch" id="pane-switch">
+  <button type="button" data-pane="editor" class="active">✏️ 편집</button>
+  <button type="button" data-pane="preview">📱 미리보기</button>
+</nav>
+
+<!-- 사진 자르기 -->
+<div class="crop-back" id="crop-back">
+  <div class="crop-box">
+    <h3>사진 자르기</h3>
+    <p id="crop-help">드래그로 위치를 옮기고, 슬라이더로 확대할 수 있어요.</p>
+    <div class="crop-stage" id="crop-stage">
+      <img id="crop-img" alt="">
+      <div class="crop-sel" id="crop-sel" style="display:none">
+        <i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i>
+      </div>
+    </div>
+    <div class="crop-ratios" id="crop-ratios">
+      <button type="button" data-ratio="free">자유</button>
+      <button type="button" data-ratio="1">1:1</button>
+      <button type="button" data-ratio="0.8">4:5</button>
+      <button type="button" data-ratio="1.777">16:9</button>
+      <button type="button" data-ratio="0.5625">9:16</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="crop-cancel">취소</button>
+      <button class="btn btn-ghost" id="crop-skip">원본 사용</button>
+      <button class="btn btn-primary" id="crop-ok">자르기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-    let state = { posts: [], stories: [], highlights: [] };
+/* =========================================================
+   슈스타그램 메이커 — 내 계정 / 친구 / 하이라이트 / 탐색
+   ========================================================= */
+(function () {
+  "use strict";
 
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
+  var DEFAULT_PIC = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">' +
+    '<rect width="200" height="200" fill="#e9eef2"/><circle cx="100" cy="78" r="34" fill="#c2ccd4"/>' +
+    '<path d="M28 200c0-40 32-62 72-62s72 22 72 62z" fill="#c2ccd4"/></svg>');
+
+  function blankState() {
+    return {
+      version: 4,
+      profile: { username: '아이디', name: '', bio: '', pic: DEFAULT_PIC,
+                 followers: '0', following: '0', isPrivate: true, noti: '', time: '9:41' },
+      posts: [], reels: [], myStories: [], highlights: [], friends: [], explore: []
+    };
+  }
+
+  var state = blankState();
+  var editingHL = null, editingFriend = null, postKind = 'post';
+  var selectedHL = null, selectedFriend = null, friendSub = 'stories';
+  var selectedPost = null, selectedFPost = null, commentBy = 'me';
+  var currentSender = 'them';
+  var pend = {};   // 폼별 임시 이미지
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function uid() { return 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function findIdx(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return i; return -1; }
+  function find(list, id) { var i = findIdx(list, id); return i < 0 ? null : list[i]; }
+
+  /* ================= 저장소 ================= */
+  var Store = (function () {
+    var KEY = 'shoostargram-state', dbPromise = null;
+    function openDB() {
+      if (dbPromise) return dbPromise;
+      dbPromise = new Promise(function (res, rej) {
+        if (!window.indexedDB) return rej(new Error('no idb'));
+        var req = indexedDB.open('shoostargram', 1);
+        req.onupgradeneeded = function () { req.result.createObjectStore('kv'); };
+        req.onsuccess = function () { res(req.result); };
+        req.onerror = function () { rej(req.error); };
+      });
+      return dbPromise;
     }
+    function lsGet() { try { var r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+    return {
+      get: function () {
+        return openDB().then(function (db) {
+          return new Promise(function (res, rej) {
+            var r = db.transaction('kv', 'readonly').objectStore('kv').get(KEY);
+            r.onsuccess = function () { res(r.result || lsGet()); };
+            r.onerror = function () { rej(r.error); };
+          });
+        })['catch'](lsGet);
+      },
+      set: function (v) {
+        return openDB().then(function (db) {
+          return new Promise(function (res, rej) {
+            var tx = db.transaction('kv', 'readwrite');
+            tx.objectStore('kv').put(v, KEY);
+            tx.oncomplete = function () { res(); };
+            tx.onerror = function () { rej(tx.error); };
+          });
+        })['catch'](function () { localStorage.setItem(KEY, JSON.stringify(v)); });
+      },
+      clear: function () {
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        return openDB().then(function (db) {
+          return new Promise(function (res) {
+            var tx = db.transaction('kv', 'readwrite');
+            tx.objectStore('kv')['delete'](KEY);
+            tx.oncomplete = function () { res(); };
+            tx.onerror = function () { res(); };
+          });
+        })['catch'](function () {});
+      }
+    };
+  })();
 
-    document.getElementById('btn-update-profile').addEventListener('click', async () => {
-        const username = document.getElementById('inp-username').value;
-        const fileInput = document.getElementById('inp-profile-file');
-        const isPrivate = document.getElementById('inp-private').checked;
-        
-        if (fileInput.files.length > 0) {
-            const base64Str = await getBase64(fileInput.files[0]);
-            document.getElementById('hidden-profile-pic').value = base64Str;
-        }
-        
-        const profilePic = document.getElementById('hidden-profile-pic').value;
-        
-        document.querySelectorAll('.global-username').forEach(el => el.innerText = username);
-        document.querySelectorAll('.global-profile-pic').forEach(el => el.src = profilePic);
-        document.getElementById('display-bio').innerText = document.getElementById('inp-bio').value;
-        document.getElementById('display-followers').innerText = document.getElementById('inp-followers').value;
-        document.getElementById('display-following').innerText = document.getElementById('inp-following').value;
-        document.getElementById('lock-icon').style.display = isPrivate ? 'block' : 'none';
-        
-        renderAll(); 
+  var saveTimer = null, saveSeq = 0;
+  function setSaveStatus(t, saving) { $('save-text').textContent = t; $('save-pill').classList.toggle('saving', !!saving); }
+  function scheduleSave() {
+    setSaveStatus('저장 중…', true);
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      var my = ++saveSeq;
+      Store.set(JSON.parse(JSON.stringify(state))).then(function () {
+        if (my !== saveSeq) return;
+        var d = new Date();
+        setSaveStatus('저장됨 ' + d.getHours() + ':' + ('0' + d.getMinutes()).slice(-2), false);
+      })['catch'](function () {
+        setSaveStatus('저장 실패', false);
+        toast('⚠️ 저장 공간이 부족해요. 백업 파일로 내려받아 주세요.');
+      });
+    }, 350);
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+
+  /* ================= 이미지 읽기 + 자르기 ================= */
+  function fileToDataURL(file) {
+    return new Promise(function (res, rej) {
+      if (!file || !/^image\//.test(file.type)) return rej(new Error('not image'));
+      var r = new FileReader();
+      r.onload = function () { res(r.result); };
+      r.onerror = function () { rej(new Error('read fail')); };
+      r.readAsDataURL(file);
+    });
+  }
+  function shrink(dataUrl, maxSize, quality) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onerror = function () { resolve(dataUrl); };
+      img.onload = function () {
+        try {
+          var w = img.naturalWidth, h = img.naturalHeight;
+          var r = Math.min(1, maxSize / Math.max(w, h));
+          w = Math.max(1, Math.round(w * r)); h = Math.max(1, Math.round(h * r));
+          var c = document.createElement('canvas'); c.width = w; c.height = h;
+          var ctx = c.getContext('2d');
+          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          var out = c.toDataURL('image/jpeg', quality || 0.86);
+          resolve(out.length < dataUrl.length ? out : dataUrl);
+        } catch (e) { resolve(dataUrl); }
+      };
+      img.src = dataUrl;
+    });
+  }
+
+  var crop = { img: null, ratio: null, cb: null, src: '', round: false, sel: null, imgRect: null };
+  var DROPS = {};     // 드롭존별 자르기 설정 (다시 자르기에 재사용)
+  var pendSrc = {};   // 자르기 전 원본 (다시 자르기용, 저장은 하지 않음)
+  var MIN_SEL = 40;
+
+  function markRatio(v) {
+    Array.prototype.forEach.call($('crop-ratios').children, function (b) {
+      var on = (v == null)
+        ? b.dataset.ratio === 'free'
+        : (b.dataset.ratio !== 'free' && Math.abs(parseFloat(b.dataset.ratio) - v) < 0.02);
+      b.classList.toggle('active', on);
+    });
+  }
+
+  function openCrop(dataUrl, ratio, round, cb) {
+    crop.src = dataUrl; crop.cb = cb; crop.round = round;
+    crop.ratio = (ratio === 'free' || !ratio) ? null : ratio;
+    crop.sel = null; crop.imgRect = null;
+    var im = $('crop-img');
+    im.onload = function () {
+      crop.img = im;
+      markRatio(crop.ratio);
+      $('crop-back').classList.add('show');
+      layoutCrop();
+    };
+    im.src = dataUrl;
+  }
+  function closeCrop() { $('crop-back').classList.remove('show'); crop.cb = null; }
+
+  // 이미지를 전부 보이게 배치하고, 그 위에서 자를 영역을 고른다
+  function layoutCrop() {
+    var stage = $('crop-stage'), im = $('crop-img'), sel = $('crop-sel');
+    if (!crop.img) return;
+    $('crop-help').textContent = crop.ratio == null
+      ? '네 모서리를 끌어 자를 영역을 정하고, 안쪽을 끌어 옮기세요.'
+      : '비율은 고정돼 있어요. 모서리를 끌어 크기를, 안쪽을 끌어 위치를 정하세요.';
+
+    var sw = stage.clientWidth, maxH = 360;
+    var nw = crop.img.naturalWidth, nh = crop.img.naturalHeight;
+    var w = sw, h = Math.round(w * nh / nw);
+    if (h > maxH) { h = maxH; w = Math.round(h * nw / nh); }
+    stage.style.height = h + 'px';
+    im.style.width = w + 'px'; im.style.height = h + 'px';
+    im.style.left = ((sw - w) / 2) + 'px'; im.style.top = '0px';
+
+    var prev = crop.imgRect;
+    crop.imgRect = { x: (sw - w) / 2, y: 0, w: w, h: h };
+    if (crop.sel && prev && prev.w) {           // 창 크기가 바뀌면 선택 영역도 같은 비율로
+      var k = crop.imgRect.w / prev.w;
+      crop.sel = {
+        x: crop.imgRect.x + (crop.sel.x - prev.x) * k,
+        y: crop.imgRect.y + (crop.sel.y - prev.y) * k,
+        w: crop.sel.w * k, h: crop.sel.h * k
+      };
+    } else if (!crop.sel) {
+      crop.sel = defaultSel();
+    }
+    sel.style.display = 'block';
+    sel.classList.toggle('round', !!crop.round && crop.ratio === 1);
+    clampSel(); drawSel();
+  }
+
+  function defaultSel() {
+    var R = crop.imgRect;
+    if (crop.ratio == null) {
+      return { x: R.x + R.w * 0.1, y: R.y + R.h * 0.1, w: R.w * 0.8, h: R.h * 0.8 };
+    }
+    var w = R.w, h = w / crop.ratio;
+    if (h > R.h) { h = R.h; w = h * crop.ratio; }
+    return { x: R.x + (R.w - w) / 2, y: R.y + (R.h - h) / 2, w: w, h: h };
+  }
+
+  function clampSel() {
+    var R = crop.imgRect, s = crop.sel;
+    if (!R || !s) return;
+    if (s.w > R.w) { s.w = R.w; if (crop.ratio != null) s.h = s.w / crop.ratio; }
+    if (s.h > R.h) { s.h = R.h; if (crop.ratio != null) s.w = s.h * crop.ratio; }
+    s.x = Math.max(R.x, Math.min(s.x, R.x + R.w - s.w));
+    s.y = Math.max(R.y, Math.min(s.y, R.y + R.h - s.h));
+  }
+  function drawSel() {
+    var s = crop.sel, el = $('crop-sel');
+    if (!s) return;
+    el.style.left = s.x + 'px'; el.style.top = s.y + 'px';
+    el.style.width = s.w + 'px'; el.style.height = s.h + 'px';
+  }
+
+  // 모서리를 끌어 크기 조절 (비율이 정해져 있으면 그 비율을 유지)
+  function resizeSel(mode, dx, dy, st) {
+    var R = crop.imgRect;
+    var west = mode.indexOf('w') >= 0, north = mode.indexOf('n') >= 0;
+    var ax = west ? st.x + st.w : st.x;      // 반대쪽 모서리를 고정점으로
+    var ay = north ? st.y + st.h : st.y;
+    var w = west ? st.w - dx : st.w + dx;
+    var h = north ? st.h - dy : st.h + dy;
+
+    if (crop.ratio != null) {
+      if (Math.abs(w - st.w) >= Math.abs(h - st.h)) h = w / crop.ratio;
+      else w = h * crop.ratio;
+    }
+    w = Math.max(MIN_SEL, w); h = Math.max(MIN_SEL, h);
+    if (crop.ratio != null) {
+      if (w / crop.ratio > h) h = w / crop.ratio; else w = h * crop.ratio;
+    }
+    var maxW = west ? ax - R.x : R.x + R.w - ax;
+    var maxH = north ? ay - R.y : R.y + R.h - ay;
+    if (w > maxW) { w = maxW; if (crop.ratio != null) h = w / crop.ratio; }
+    if (h > maxH) { h = maxH; if (crop.ratio != null) w = h * crop.ratio; }
+
+    return { x: west ? ax - w : ax, y: north ? ay - h : ay, w: w, h: h };
+  }
+
+  function applyCrop() {
+    var R = crop.imgRect, s = crop.sel;
+    var sc = R.w / crop.img.naturalWidth;
+    var fx = (s.x - R.x) / sc, fy = (s.y - R.y) / sc, fw = s.w / sc, fh = s.h / sc;
+    var k = Math.min(1, 1280 / Math.max(fw, fh));
+    var c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(fw * k));
+    c.height = Math.max(1, Math.round(fh * k));
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(crop.img, fx, fy, fw, fh, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.86);
+  }
+
+  (function bindCrop() {
+    var lastDragEnd = 0;
+    function startSel(e, mode) {
+      e.preventDefault(); e.stopPropagation();
+      var st = Object.assign({}, crop.sel);
+      var px = e.clientX, py = e.clientY;
+      function move(ev) {
+        var dx = ev.clientX - px, dy = ev.clientY - py;
+        crop.sel = (mode === 'move')
+          ? { x: st.x + dx, y: st.y + dy, w: st.w, h: st.h }
+          : resizeSel(mode, dx, dy, st);
+        clampSel(); drawSel();
+      }
+      function up() {
+        lastDragEnd = Date.now();
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', up);
+      }
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', up);
+    }
+    $('crop-sel').addEventListener('pointerdown', function (e) {
+      var h = e.target.closest('i[data-h]');
+      startSel(e, h ? h.dataset.h : 'move');
     });
 
-    document.getElementById('inp-type').addEventListener('change', (e) => {
-        const type = e.target.value;
-        const wrapText2 = document.getElementById('wrap-text2');
-        const labelText1 = document.getElementById('label-text1');
-        
-        if(type === 'post') {
-            wrapText2.style.display = 'flex';
-            labelText1.innerText = '내용 (캡션)';
-        } else {
-            wrapText2.style.display = 'none';
-            labelText1.innerText = type === 'story' ? '스토리 이름 (선택)' : '하이라이트 이름 (선택)';
-        }
+    $('crop-ratios').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-ratio]'); if (!b) return;
+      crop.ratio = (b.dataset.ratio === 'free') ? null : parseFloat(b.dataset.ratio);
+      crop.sel = defaultSel();
+      markRatio(crop.ratio);
+      layoutCrop();
+    });
+    $('crop-cancel').addEventListener('click', closeCrop);
+    $('crop-ok').addEventListener('click', function () {
+      var cb = crop.cb, out = applyCrop();
+      closeCrop(); if (cb) cb(out);
+    });
+    $('crop-skip').addEventListener('click', function () {
+      var cb = crop.cb, src = crop.src;
+      closeCrop();
+      shrink(src, 1280, 0.86).then(function (u) { if (cb) cb(u); });
+    });
+    $('crop-back').addEventListener('click', function (e) {
+      if (e.target === this && Date.now() - lastDragEnd > 250) closeCrop();
+    });
+    window.addEventListener('resize', function () { if ($('crop-back').classList.contains('show')) layoutCrop(); });
+  })();
+
+  // 드롭존 연결: 파일 선택/드래그 → 자르기 창 → 콜백
+  function bindDrop(dropId, ratio, round, cb) {
+    var drop = $(dropId), input = drop.querySelector('input[type=file]');
+    var key = dropId.replace('drop-', '');
+    DROPS[key] = { ratio: ratio, round: round, cb: cb };
+    function handle(file) {
+      fileToDataURL(file).then(function (url) {
+        pendSrc[key] = url;
+        openCrop(url, ratio, round, cb);
+      })['catch'](function () { toast('이미지를 읽지 못했어요 😢'); });
+    }
+    input.addEventListener('change', function () { if (this.files && this.files[0]) handle(this.files[0]); this.value = ''; });
+    ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+    ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+    drop.addEventListener('drop', function (e) {
+      var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handle(f);
+    });
+  }
+
+  // 올려둔 사진 다시 자르기
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.recrop');
+    if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var key = b.dataset.recrop, d = DROPS[key];
+    var src = pendSrc[key] || (key === 'profile' ? state.profile.pic : pend[key]);
+    if (!d || !src) { toast('먼저 사진을 올려주세요 🖼'); return; }
+    openCrop(src, d.ratio, d.round, d.cb);
+  }, true);
+
+  /* ================= 폼 썸네일 관리 ================= */
+  var THUMBS = {
+    profile:  { t:'thumb-profile' },
+    post:     { t:'thumb-post',    ti:'drop-post-title',    s:'drop-post-sub',    idle:['사진 선택 또는 드래그','클릭해서 이미지를 올려주세요'] },
+    mystory:  { t:'thumb-mystory', ti:'drop-mystory-title', s:'drop-mystory-sub', idle:['사진 선택 또는 드래그','9:16 비율을 권장해요'] },
+    hl:       { t:'thumb-hl',      ti:'drop-hl-title',      s:'drop-hl-sub',      idle:['커버 선택 또는 드래그','비우면 첫 스토리가 커버가 돼요'] },
+    hlstory:  { t:'thumb-hlstory', ti:'drop-hlstory-title', s:'drop-hlstory-sub', idle:['사진 선택 또는 드래그','여러 장을 넣으면 모아보기가 돼요'] },
+    friend:   { t:'thumb-friend',  ti:'drop-friend-title',  s:'drop-friend-sub',  idle:['사진 선택 또는 드래그','비워두면 기본 이미지가 들어가요'] },
+    fstory:   { t:'thumb-fstory',  ti:'drop-fstory-title',  s:'drop-fstory-sub',  idle:['사진 선택 또는 드래그','9:16 비율을 권장해요'] },
+    fpost:    { t:'thumb-fpost',   ti:'drop-fpost-title',   s:'drop-fpost-sub',   idle:['사진 선택 또는 드래그','클릭해서 이미지를 올려주세요'] },
+    reel:     { t:'thumb-reel',    ti:'drop-reel-title',    s:'drop-reel-sub',    idle:['사진 선택 또는 드래그','9:16 세로 사진을 권장해요'] },
+    freel:    { t:'thumb-freel',   ti:'drop-freel-title',   s:'drop-freel-sub',   idle:['사진 선택 또는 드래그','9:16 세로 사진을 권장해요'] },
+    explore:  { t:'thumb-explore', ti:'drop-explore-title', s:'drop-explore-sub', idle:['사진 선택 또는 드래그','정사각형 이미지를 권장해요'] }
+  };
+  function setPend(key, url) {
+    pend[key] = url || '';
+    if (!url) delete pendSrc[key];
+    var rb = document.querySelector('.recrop[data-recrop="' + key + '"]');
+    if (rb) rb.style.display = url ? 'inline-block' : 'none';
+    var c = THUMBS[key]; if (!c) return;
+    var t = $(c.t);
+    if (url) t.src = url; else t.removeAttribute('src');
+    if (!c.ti) return;
+    if (url) { $(c.ti).textContent = '사진이 준비됐어요'; $(c.s).textContent = '다시 클릭하면 교체할 수 있어요'; }
+    else { $(c.ti).textContent = c.idle[0]; $(c.s).textContent = c.idle[1]; }
+  }
+
+  /* ================= 미리보기 조각 ================= */
+  var SVG = {
+    heart: '<svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+    comment: '<svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>',
+    share: '<svg class="icon" width="24" height="24" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>',
+    save: '<svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>',
+    dots: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>',
+    cam: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="1.6"><circle cx="12" cy="13" r="3.2"></circle><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-3l-1.5-2h-7L7 7H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1z"></path></svg>'
+  };
+
+  function commentAuthor(c) {
+    var by = (c && typeof c === 'object') ? c.by : c;
+    if (by === 'me') return state.profile.username || 'username';
+    var f = find(state.friends, by);
+    if (f) return f.name;
+    return (c && c.name) || '알 수 없음';
+  }
+  var HEART_SM = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8e8e8e" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+
+  function commentsBlockHTML(p) {
+    var cs = p.comments || [];
+    if (!cs.length) return p.comment ? '<div class="feed-comments">댓글 ' + esc(p.comment) + '개 모두 보기</div>' : '';
+    var total = (p.comment || '').trim() || cs.length;
+    var shown = cs.length > 2 ? cs.slice(cs.length - 2) : cs;
+    var html = (cs.length > 2 || (p.comment || '').trim())
+      ? '<div class="feed-comments">댓글 ' + esc(total) + '개 모두 보기</div>' : '';
+    html += '<div class="feed-comment-list">' + shown.map(function (c) {
+      return '<div class="fc"><b>' + esc(commentAuthor(c)) + '</b>' +
+        '<span class="fc-text">' + esc(c.text) + '</span>' + HEART_SM + '</div>';
+    }).join('') + '</div>';
+    return html;
+  }
+
+  function feedPostHTML(o) {
+    var p = o.post;
+    var likeNum = String(p.like || '').replace(/개\s*$/, '').trim();
+    var cs = p.comments || [];
+    var cNum = (p.comment || '').trim() || (cs.length ? String(cs.length) : '');
+    return '<article class="feed-post" id="post-' + esc(p.id) + '">' +
+      '<div class="feed-header"><div class="feed-user">' +
+        '<div class="feed-user-ring' + (o.hasStory ? '' : ' plain') + '"><img src="' + o.pic + '" class="feed-user-img" alt=""></div>' +
+        '<span>' + esc(o.name) + '</span></div>' + SVG.dots + '</div>' +
+      '<img src="' + p.pic + '" class="feed-main-img" alt="">' +
+      '<div class="feed-actions"><div class="action-left">' +
+        '<span class="fa-item">' + SVG.heart + (likeNum ? '<span>' + esc(likeNum) + '</span>' : '') + '</span>' +
+        '<span class="fa-item">' + SVG.comment + (cNum ? '<span>' + esc(cNum) + '</span>' : '') + '</span>' +
+        SVG.share + '</div>' + SVG.save + '</div>' +
+      (p.text ? '<div class="feed-caption"><span>' + esc(o.name) + '</span>' + esc(p.text) + '</div>' : '') +
+      commentsBlockHTML(p) +
+      '<div class="feed-date">' + esc(p.date || '방금 전') + '</div></article>';
+  }
+
+  function reelHTML(o) {
+    var p = o.post;
+    return '<div class="reel"><img src="' + p.pic + '" alt="">' +
+      '<div class="reel-top"><span>릴스</span>' +
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><path d="M12 8v8M8 12h8"></path></svg></div>' +
+      '<div class="reel-bottom"><div class="reel-user"><img src="' + o.pic + '" alt=""><span>' + esc(o.name) + '</span></div>' +
+      (p.text ? '<div class="reel-cap">' + esc(p.text) + '</div>' : '') +
+      '<div class="reel-music"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>' +
+        '<span>' + esc(p.music || '원본 오디오') + '</span></div></div>' +
+      (p.views ? '<div class="reel-views"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>조회 ' + esc(p.views) + '</div>' : '') +
+      '<div class="reel-rail">' +
+        '<div><svg width="26" height="26" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span>' + esc(String(p.like || '0개').replace('개', '')) + '</span></div>' +
+        '<div><svg width="26" height="26" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg><span>' + esc(p.comment || '0') + '</span></div>' +
+        '<div><svg width="26" height="26" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></div>' +
+        '<div><svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle><circle cx="5" cy="12" r="1.6"></circle></svg></div>' +
+      '</div></div>';
+  }
+
+  function threadHTML(f) {
+    var body = '<div class="thread-intro"><img src="' + f.pic + '" alt="">' +
+      '<div class="ti-name">' + esc(f.name) + '</div>' +
+      '<div class="ti-sub">Shoostargram · 게시물 ' + (f.posts || []).length + '개</div></div>';
+    var lastTime = '';
+    (f.messages || []).forEach(function (m, i) {
+      if (m.time && m.time !== lastTime) { body += '<div class="chat-time">' + esc(m.time) + '</div>'; lastTime = m.time; }
+      var next = (f.messages[i + 1] || {}).from;
+      var showAv = m.from === 'them' && next !== 'them';
+      body += '<div class="chat ' + (m.from === 'me' ? 'me' : 'them') + '">' +
+        (m.from === 'them' ? (showAv ? '<img class="ch-av" src="' + f.pic + '" alt="">' : '<div style="width:25px"></div>') : '') +
+        '<div class="bubble">' + esc(m.text) + '</div></div>';
+    });
+    return '<div class="thread" id="thread-' + esc(f.id) + '">' +
+      '<div class="thread-head">' +
+        '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer" onclick="closeThread()"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>' +
+        '<img src="' + f.pic + '" alt="">' +
+        '<div><div class="th-name">' + esc(f.name) + '</div><div class="th-sub">' + esc(f.active || '활동 중') + '</div></div>' +
+        '<div class="th-acts">' +
+          '<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>' +
+          '<svg class="icon" width="22" height="22" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>' +
+        '</div></div>' +
+      '<div class="thread-body">' + body + '</div>' +
+      '<div class="thread-input">' +
+        '<div class="ti-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="13" r="3.2"></circle><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-3l-1.5-2h-7L7 7H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1z"></path></svg></div>' +
+        '<div class="ti-box"><span>메시지 보내기...</span></div>' +
+      '</div></div>';
+  }
+
+  // 스토리 뷰어 (내 스토리 / 친구 스토리 / 하이라이트 공용)
+  function storyViewerHTML(g) {
+    var bars = '', slides = '';
+    g.items.forEach(function (s, i) {
+      bars += '<div class="sv-bar' + (i === 0 ? ' now' : '') + '"><i></i></div>';
+      slides += '<div class="sv-slide' + (i === 0 ? ' on' : '') + '" data-time="' + esc(s.time || '') + '">' +
+        '<img src="' + s.pic + '" alt="">' + (s.text ? '<div class="sv-cap">' + esc(s.text) + '</div>' : '') + '</div>';
+    });
+    var vid = 'sv-' + g.id;
+    var bottom = g.mine
+      ? '<div class="sv-own">' +
+          '<div><svg width="23" height="23" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9.5" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path></svg><span>활동</span></div>' +
+          '<div><svg width="23" height="23" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"></rect><path d="M3 8v8M21 8v8"></path></svg><span>둘러보기</span></div>' +
+          '<div><svg width="23" height="23" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg><span>보내기</span></div>' +
+          '<div><svg width="23" height="23" viewBox="0 0 24 24"><line x1="4" y1="8" x2="20" y2="8"></line><line x1="4" y1="16" x2="14" y2="16"></line></svg><span>더 보기</span></div>' +
+        '</div>'
+      : '<div class="sv-input"><div class="sv-box">메시지 보내기...</div>' +
+          '<svg width="22" height="22" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' +
+          '<svg width="22" height="22" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>' +
+        '</div>';
+    return '<div class="story-viewer' + (g.mine ? ' mine' : '') + '" id="' + vid + '" data-idx="0">' +
+      '<div class="sv-slides">' + slides + '</div>' +
+      '<div class="sv-tap left" onclick="storyNav(\'' + vid + '\',-1)"></div>' +
+      '<div class="sv-tap right" onclick="storyNav(\'' + vid + '\',1)"></div>' +
+      '<div class="sv-bars">' + bars + '</div>' +
+      '<div class="sv-top"><img src="' + g.pic + '" alt="">' +
+        '<span class="sv-name">' + esc(g.name) + '</span>' +
+        '<span class="sv-time" id="' + vid + '-time">' + esc((g.items[0] || {}).time || '') + '</span>' +
+        '<span class="sv-close" onclick="closeStory()">' +
+          '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+        '</span></div>' + bottom + '</div>';
+  }
+
+  function storyGroups() {
+    var p = state.profile, groups = [];
+    if (state.myStories.length) groups.push({ id: 'me', name: p.username || 'username', pic: p.pic || DEFAULT_PIC, items: state.myStories, mine: true });
+    state.friends.forEach(function (f) {
+      if ((f.stories || []).length) groups.push({ id: 'f-' + f.id, name: f.name, pic: f.pic, items: f.stories });
+    });
+    state.highlights.forEach(function (h) {
+      if ((h.stories || []).length) groups.push({ id: 'hl-' + h.id, name: h.title || '하이라이트', pic: hlCover(h), items: h.stories, mine: true });
+    });
+    return groups;
+  }
+  function hlCover(h) { return h.cover || ((h.stories || [])[0] || {}).pic || DEFAULT_PIC; }
+
+  /* ================= 미리보기 렌더 ================= */
+  function renderPreview() {
+    var p = state.profile;
+    var username = p.username || 'username';
+    var pic = p.pic || DEFAULT_PIC;
+    var hasMyStory = state.myStories.length > 0;
+
+    Array.prototype.forEach.call(document.querySelectorAll('.global-username'), function (el) { el.textContent = username; });
+    Array.prototype.forEach.call(document.querySelectorAll('.global-profile-pic'), function (el) { el.src = pic; });
+    $('display-name').textContent = p.name || '';
+    $('display-name').style.display = p.name ? 'block' : 'none';
+    $('display-bio').textContent = p.bio || '';
+    $('display-followers').textContent = p.followers || '0';
+    $('display-following').textContent = p.following || '0';
+    $('display-post-count').textContent = state.posts.length;
+    $('lock-icon').style.display = p.isPrivate ? 'block' : 'none';
+    $('sb-time').textContent = p.time || '9:41';
+
+    // 내 프로필 스토리 링
+    var ring = $('my-profile-ring');
+    ring.classList.toggle('has-story', hasMyStory);
+    ring.setAttribute('onclick', hasMyStory ? "openStory('sv-me')" : '');
+    $('my-story-plus').style.display = hasMyStory ? 'none' : 'flex';
+
+    var noti = (p.noti || '').trim();
+    $('noti-badge').style.display = noti ? 'flex' : 'none';
+    $('noti-badge').textContent = noti;
+    var unread = state.friends.filter(function (f) { return f.unread && (f.messages || []).length; }).length;
+    $('dm-badge').style.display = unread ? 'flex' : 'none';
+    $('dm-badge').textContent = unread;
+
+    // 피드 = 내 게시물 + 친구 게시물 / 그리드 = 내 게시물만
+    var feedItems = [], grid = [];
+    state.posts.forEach(function (post) {
+      feedItems.push({ post: post, name: username, pic: pic, hasStory: hasMyStory });
+      grid.push('<div class="grid-cell" onclick="openModal(\'post-' + esc(post.id) + '\')"><img src="' + post.pic + '" alt=""></div>');
+    });
+    state.friends.forEach(function (f) {
+      (f.posts || []).forEach(function (post) {
+        feedItems.push({ post: post, name: f.name, pic: f.pic, hasStory: (f.stories || []).length > 0 });
+      });
     });
 
-    document.getElementById('btn-add-item').addEventListener('click', async () => {
-        const type = document.getElementById('inp-type').value;
-        const fileInput = document.getElementById('inp-item-file');
-        let pic = document.getElementById('hidden-item-pic').value;
-        
-        if (fileInput.files.length > 0) {
-            pic = await getBase64(fileInput.files[0]);
-        }
-        
-        if(!pic) return alert('이미지를 업로드 해주세요!');
-
-        const text1 = document.getElementById('inp-item-text1').value;
-        const newItem = { id: Date.now().toString(), pic, text: text1 };
-
-        if(type === 'post') {
-            newItem.date = document.getElementById('inp-item-date').value;
-            newItem.like = document.getElementById('inp-item-like').value;
-            state.posts.unshift(newItem); 
-        } else if(type === 'story') {
-            state.stories.push(newItem);
-        } else if(type === 'highlight') {
-            state.highlights.push(newItem);
-        }
-
-        fileInput.value = '';
-        document.getElementById('hidden-item-pic').value = '';
-        document.getElementById('inp-item-text1').value = '';
-        document.getElementById('edit-img-notice').style.display = 'none';
-        
-        renderAll();
+    // 릴스는 피드와 별도 항목
+    var reelItems = [], reelGrid = [];
+    state.reels.forEach(function (r) {
+      reelItems.push({ post: r, name: username, pic: pic });
+      reelGrid.push('<div class="grid-cell"><img src="' + r.pic + '" alt="">' +
+        '<svg class="cell-play" width="15" height="15" viewBox="0 0 24 24" fill="#fff" stroke="none"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>' +
+        (r.views ? '<span class="cell-views"><svg width="11" height="11" viewBox="0 0 24 24" fill="#fff" stroke="none"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>' + esc(r.views) + '</span>' : '') +
+        '</div>');
+    });
+    state.friends.forEach(function (f) {
+      (f.reels || []).forEach(function (r) { reelItems.push({ post: r, name: f.name, pic: f.pic }); });
     });
 
-    window.deleteItem = function(type, id) {
-        state[type] = state[type].filter(item => item.id !== id);
-        renderAll();
-    }
+    $('display-feed').innerHTML = feedItems.length
+      ? feedItems.map(feedPostHTML).join('') + '<div class="feed-end">모든 게시물을 확인했습니다</div>'
+      : '<div class="feed-empty">아직 게시물이 없어요.<br>편집 패널에서 게시물을 추가해 보세요 ✨</div>';
+    $('display-grid').innerHTML = grid.length ? grid.join('') : '<div class="grid-empty">게시물을 추가하면<br>여기에 그리드가 채워져요</div>';
+    $('display-reel-grid').innerHTML = reelGrid.length ? reelGrid.join('') : '<div class="grid-empty">릴스를 추가하면<br>여기에 표시돼요</div>';
+    $('display-reels').innerHTML = reelItems.length ? reelItems.map(reelHTML).join('')
+      : '<div class="reels-empty"><span>게시물 탭의 <b>릴스</b>에서<br>세로 사진을 올려보세요 🎬</span></div>';
 
-    window.editItem = function(type, id) {
-        const item = state[type].find(item => item.id === id);
-        if(!item) return;
+    // 탐색(추천 피드) — 3열 격자
+    $('display-explore').innerHTML = state.explore.length
+      ? state.explore.map(function (e) {
+          return '<div class="grid-cell"><img src="' + e.pic + '" alt=""></div>';
+        }).join('')
+      : '<div class="grid-empty">탐색 탭에서 추천 게시물을<br>추가해 보세요</div>';
 
-        document.getElementById('inp-type').value = type === 'posts' ? 'post' : type === 'stories' ? 'story' : 'highlight';
-        document.getElementById('inp-type').dispatchEvent(new Event('change')); 
-        
-        document.getElementById('inp-item-file').value = '';
-        document.getElementById('hidden-item-pic').value = item.pic;
-        document.getElementById('edit-img-notice').style.display = 'block'; 
-        
-        document.getElementById('inp-item-text1').value = item.text;
-        
-        if(type === 'posts') {
-            document.getElementById('inp-item-date').value = item.date;
-            document.getElementById('inp-item-like').value = item.like;
-        }
-
-        deleteItem(type, id); 
-    }
-
-    function renderAll() {
-        const username = document.getElementById('inp-username').value;
-        const profilePic = document.getElementById('hidden-profile-pic').value;
-        
-        const feedContainer = document.getElementById('display-feed');
-        const gridContainer = document.getElementById('display-grid');
-        feedContainer.innerHTML = ''; gridContainer.innerHTML = '';
-        
-        state.posts.forEach(post => {
-            const feedHTML = `
-                <article class="feed-post" id="post-${post.id}">
-                    <div class="feed-header">
-                        <div class="feed-user"><div class="feed-user-ring"><img src="${profilePic}" class="feed-user-img"></div><span style="color:#262626;">${username}</span></div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#262626" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                    </div>
-                    <img src="${post.pic}" class="feed-main-img">
-                    <div class="feed-actions">
-                        <div class="action-left">
-                            <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                            <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                            <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        </div>
-                        <svg class="icon" width="24" height="24" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                    </div>
-                    <div class="feed-likes">좋아요 ${post.like}</div>
-                    <div class="feed-caption"><span>${username}</span>${post.text}</div>
-                    <div class="feed-date">${post.date}</div>
-                </article>`;
-            feedContainer.insertAdjacentHTML('beforeend', feedHTML);
-            
-            const gridHTML = `<div class="grid-cell" onclick="openModal('post-${post.id}')"><img src="${post.pic}"></div>`;
-            gridContainer.insertAdjacentHTML('beforeend', gridHTML);
-        });
-        document.getElementById('display-post-count').innerText = state.posts.length;
-
-        const storyContainer = document.getElementById('display-stories');
-        Array.from(storyContainer.children).forEach(child => { if(child.id !== 'my-story-btn') child.remove(); });
-        state.stories.forEach(story => {
-            const storyHTML = `
-                <div class="story-item">
-                    <div class="story-ring active"><img src="${story.pic}"></div>
-                    <span class="story-name">${story.text || '스토리'}</span>
-                </div>`;
-            storyContainer.insertAdjacentHTML('beforeend', storyHTML);
-        });
-
-        const hlContainer = document.getElementById('display-highlights');
-        hlContainer.innerHTML = '';
-        state.highlights.forEach(hl => {
-            const hlHTML = `
-                <div class="highlight-item">
-                    <div class="hl-circle"><div class="hl-inner"><img src="${hl.pic}"></div></div>
-                    <span class="hl-title">${hl.text || '새로운'}</span>
-                </div>`;
-            hlContainer.insertAdjacentHTML('beforeend', hlHTML);
-        });
-
-        const manageContainer = document.getElementById('manage-list-container');
-        manageContainer.innerHTML = '';
-        const types = [
-            { key: 'posts', label: '게시물' },
-            { key: 'stories', label: '스토리' },
-            { key: 'highlights', label: '하이라이트' }
-        ];
-
-        types.forEach(t => {
-            state[t.key].forEach(item => {
-                const titleText = item.text ? item.text : '(내용 없음)';
-                const listHTML = `
-                    <div class="manage-item">
-                        <div style="display:flex; align-items:center; flex:1; overflow:hidden;">
-                            <img src="${item.pic}">
-                            <div class="manage-item-info">[${t.label}] ${titleText}</div>
-                        </div>
-                        <div class="manage-actions">
-                            <button class="btn-edit" onclick="editItem('${t.key}', '${item.id}')">수정</button>
-                            <button class="btn-delete" onclick="deleteItem('${t.key}', '${item.id}')">삭제</button>
-                        </div>
-                    </div>`;
-                manageContainer.insertAdjacentHTML('beforeend', listHTML);
-            });
-        });
-    }
-
-    window.switchTab = function(tab) {
-        if(tab === 'home') {
-            document.getElementById('page-profile').style.display = 'none';
-            document.getElementById('page-home').style.display = 'block';
-            document.getElementById('icon-home').setAttribute('fill', '#262626');
-            document.getElementById('icon-home').setAttribute('stroke', 'none');
-            document.getElementById('icon-profile-wrap').classList.remove('active');
-        } else {
-            document.getElementById('page-home').style.display = 'none';
-            document.getElementById('page-profile').style.display = 'block';
-            document.getElementById('icon-home').setAttribute('fill', 'none');
-            document.getElementById('icon-home').setAttribute('stroke', 'currentColor');
-            document.getElementById('icon-profile-wrap').classList.add('active');
-        }
-    }
-
-    window.openModal = function(postId) {
-        const postElement = document.getElementById(postId);
-        if(!postElement) return;
-        document.getElementById('modal-feed-content').innerHTML = postElement.outerHTML;
-        document.getElementById('postModal').classList.add('show');
-    }
-
-    window.closeModal = function() {
-        document.getElementById('postModal').classList.remove('show');
-        document.getElementById('modal-feed-content').innerHTML = '';
-    }
-
-    document.getElementById('btn-download-html').addEventListener('click', () => {
-        const phoneHTML = document.getElementById('export-target').outerHTML;
-        const styles = document.querySelector('style').innerHTML;
-
-        const finalOutput = `<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Shoostargram</title>
-<style>
-    body { background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: auto; }
-    ${styles}
-    .control-panel, #code-output-area { display: none !important; }
-    .phone-frame { transform: scale(1); margin: 20px auto; } 
-</style>
-</head>
-<body>
-    ${phoneHTML}
-    <script>
-        function switchTab(tab) {
-            if(tab === 'home') {
-                document.getElementById('page-profile').style.display = 'none';
-                document.getElementById('page-home').style.display = 'block';
-                document.getElementById('icon-home').setAttribute('fill', '#262626');
-                document.getElementById('icon-home').setAttribute('stroke', 'none');
-                document.getElementById('icon-profile-wrap').classList.remove('active');
-            } else {
-                document.getElementById('page-home').style.display = 'none';
-                document.getElementById('page-profile').style.display = 'block';
-                document.getElementById('icon-home').setAttribute('fill', 'none');
-                document.getElementById('icon-home').setAttribute('stroke', 'currentColor');
-                document.getElementById('icon-profile-wrap').classList.add('active');
-            }
-        }
-        function openModal(postId) {
-            const postElement = document.getElementById(postId);
-            if(!postElement) return;
-            document.getElementById('modal-feed-content').innerHTML = postElement.outerHTML;
-            document.getElementById('postModal').classList.add('show');
-        }
-        function closeModal() {
-            document.getElementById('postModal').classList.remove('show');
-            document.getElementById('modal-feed-content').innerHTML = '';
-        }
-    <\/script>
-</body>
-</html>`;
-
-        const blob = new Blob([finalOutput], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'shoostargram.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    // 스토리 바
+    var storyHTML = '<div class="story-item"' + (hasMyStory ? ' onclick="openStory(\'sv-me\')"' : '') + '>' +
+      '<div class="story-ring ' + (hasMyStory ? 'active' : 'empty') + '"><img class="global-profile-pic" src="' + pic + '" alt="">' +
+      (hasMyStory ? '' : '<div class="my-story-badge" style="width:20px; height:20px; font-size:14px; bottom:-2px; right:-2px">+</div>') +
+      '</div><span class="story-name"' + (hasMyStory ? '' : ' style="color:#737373"') + '>내 스토리</span></div>';
+    state.friends.forEach(function (f) {
+      if (!(f.stories || []).length) return;
+      storyHTML += '<div class="story-item" onclick="openStory(\'sv-f-' + esc(f.id) + '\')">' +
+        '<div class="story-ring active"><img src="' + f.pic + '" alt=""></div>' +
+        '<span class="story-name">' + esc(f.name) + '</span></div>';
     });
+    $('display-stories').innerHTML = storyHTML;
+
+    // 하이라이트
+    $('display-highlights').innerHTML = state.highlights.map(function (h) {
+      var click = (h.stories || []).length ? ' onclick="openStory(\'sv-hl-' + esc(h.id) + '\')"' : '';
+      return '<div class="highlight-item"' + click + '><div class="hl-circle"><div class="hl-inner">' +
+        '<img src="' + hlCover(h) + '" alt=""></div></div>' +
+        '<span class="hl-title">' + esc(h.title || '새로운') + '</span></div>';
+    }).join('');
+
+    // DM 목록 + 대화방
+    var chats = state.friends.filter(function (f) { return (f.messages || []).length; });
+    $('display-dm-list').innerHTML = chats.length ? chats.map(function (f) {
+      var last = f.messages[f.messages.length - 1];
+      var lastText = (last.from === 'me' ? '회원님: ' : '') + last.text;
+      return '<div class="dm-row' + (f.unread ? ' unread' : '') + '" onclick="openThread(\'thread-' + esc(f.id) + '\')">' +
+        '<img class="dm-avatar" src="' + f.pic + '" alt="">' +
+        '<div class="dm-row-info"><div class="dm-row-name">' + esc(f.name) + '</div>' +
+        '<div class="dm-row-last">' + esc(lastText) + ' · ' + esc(f.time || '방금') + '</div></div>' +
+        (f.unread ? '<div class="dm-unread-dot"></div>' : '') + SVG.cam + '</div>';
+    }).join('') : '<div class="dm-empty">아직 대화가 없어요.<br><b>친구</b> 탭에서 메시지를 추가해 보세요 💬</div>';
+    $('thread-host').innerHTML = chats.map(threadHTML).join('');
+
+    // 스토리 뷰어
+    $('story-host').innerHTML = storyGroups().map(storyViewerHTML).join('');
+  }
+
+  /* ================= 편집 리스트 ================= */
+  var ICON = {
+    up: '<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>',
+    down: '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>',
+    copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+    edit: '<svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>',
+    del: '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>'
+  };
+
+  function listOf(key) {
+    var h, f;
+    if (key === 'posts') return state.posts;
+    if (key === 'reels') return state.reels;
+    if (key === 'myStories') return state.myStories;
+    if (key === 'highlights') return state.highlights;
+    if (key === 'friends') return state.friends;
+    if (key === 'explore') return state.explore;
+    if (key === 'hlstories') { h = find(state.highlights, selectedHL); if (!h) return []; h.stories = h.stories || []; return h.stories; }
+    if (key === 'fstories') { f = find(state.friends, selectedFriend); if (!f) return []; f.stories = f.stories || []; return f.stories; }
+    if (key === 'fposts') { f = find(state.friends, selectedFriend); if (!f) return []; f.posts = f.posts || []; return f.posts; }
+    if (key === 'freels') { f = find(state.friends, selectedFriend); if (!f) return []; f.reels = f.reels || []; return f.reels; }
+    if (key === 'fmsgs') { f = find(state.friends, selectedFriend); if (!f) return []; f.messages = f.messages || []; return f.messages; }
+    return [];
+  }
+
+  function acts(key, id, i, len, canEdit) {
+    return '<div class="item-acts">' +
+      '<button title="위로" data-act="up" data-key="' + key + '" data-id="' + esc(id) + '"' + (i === 0 ? ' disabled' : '') + '>' + ICON.up + '</button>' +
+      '<button title="아래로" data-act="down" data-key="' + key + '" data-id="' + esc(id) + '"' + (i === len - 1 ? ' disabled' : '') + '>' + ICON.down + '</button>' +
+      '<button title="복사" data-act="copy" data-key="' + key + '" data-id="' + esc(id) + '">' + ICON.copy + '</button>' +
+      (canEdit ? '<button title="수정" data-act="edit" data-key="' + key + '" data-id="' + esc(id) + '">' + ICON.edit + '</button>' : '') +
+      '<button title="삭제" class="del" data-act="del" data-key="' + key + '" data-id="' + esc(id) + '">' + ICON.del + '</button></div>';
+  }
+
+  function renderList(boxId, key, opt) {
+    var list = listOf(key), box = $(boxId);
+    if (!box) return;
+    if (!list.length) { box.innerHTML = '<div class="empty">' + opt.empty + '</div>'; return; }
+    box.innerHTML = list.map(function (it, i) {
+      var isSel = opt.selected && opt.selected === it.id;
+      var isEdit = opt.editing && opt.editing === it.id;
+      var cls = 'item' + (isEdit ? ' editing' : (isSel ? ' selected' : ''));
+      var tag = isEdit ? '<span class="tag">수정 중</span>' : (isSel ? '<span class="tag">선택됨</span>' : '');
+      return '<div class="' + cls + '">' +
+        '<img class="' + (opt.round ? 'round' : '') + '" src="' + (opt.pic ? opt.pic(it) : it.pic) + '" alt="">' +
+        '<div class="item-info"' + (opt.open ? ' data-open="' + key + ':' + esc(it.id) + '"' : '') + '>' +
+          '<b>' + esc(opt.title(it, i)) + tag + '</b><small>' + esc(opt.sub(it, i)) + '</small></div>' +
+        acts(key, it.id, i, list.length, !!opt.edit) + '</div>';
+    }).join('');
+  }
+
+  function renderEditor() {
+    $('badge-posts').textContent = state.posts.length + state.reels.length;
+    $('badge-story').textContent = state.myStories.length + state.highlights.length;
+    $('badge-friends').textContent = state.friends.length;
+    $('badge-explore').textContent = state.explore.length;
+
+    renderList('post-list', 'posts', {
+      empty: '아직 게시물이 없어요.<br>위에서 첫 게시물을 올려보세요 🌱',
+      title: function (p) { return p.text || '(내용 없음)'; },
+      sub: function (p) { return (p.date || '방금 전') + ' · 댓글 ' + (p.comments || []).length + '개'; },
+      edit: true, editing: editing.post, open: true, selected: selectedPost
+    });
+    renderCommentEditor('post', find(state.posts, selectedPost));
+    renderList('reel-list', 'reels', {
+      empty: '아직 릴스가 없어요.<br>세로 사진을 올려 릴스를 만들어 보세요 🎬',
+      title: function (r) { return r.text || '(내용 없음)'; },
+      sub: function (r) { return (r.music || '원본 오디오') + (r.views ? ' · 조회 ' + r.views : ''); },
+      edit: true, editing: editing.reel
+    });
+    renderList('mystory-list', 'myStories', {
+      empty: '일반 스토리가 없어요. 스토리를 올리면 프로필에 무지개 링이 생겨요 🌈',
+      title: function (s) { return s.text || '(문구 없음)'; },
+      sub: function (s) { return s.time || '방금'; },
+      edit: true, editing: editing.mystory
+    });
+    renderList('hl-list', 'highlights', {
+      empty: '하이라이트가 없어요. 이름을 정해 만들어 보세요 ✨',
+      round: true, pic: hlCover, open: true, edit: true, selected: selectedHL, editing: editingHL,
+      title: function (h) { return h.title || '(이름 없음)'; },
+      sub: function (h) { return '스토리 ' + (h.stories || []).length + '장 · 눌러서 편집'; }
+    });
+    renderList('friend-list', 'friends', {
+      empty: '친구가 없어요. 친구를 추가하면 스토리 · 피드 · DM을 만들 수 있어요 👭',
+      round: true, open: true, edit: true, selected: selectedFriend, editing: editingFriend,
+      title: function (f) { return f.name + (f.unread ? ' 🔵' : ''); },
+      sub: function (f) {
+        return '스토리 ' + (f.stories || []).length + ' · 게시물 ' + (f.posts || []).length + ' · 메시지 ' + (f.messages || []).length;
+      }
+    });
+    renderList('explore-list', 'explore', {
+      empty: '추천 게시물이 없어요. 사진을 올리면 탐색 탭이 채워져요 🔍',
+      title: function (e, i) { return '추천 게시물 ' + (i + 1); },
+      sub: function () { return '탐색 탭에 표시돼요'; }
+    });
+
+    // 하이라이트 편집기
+    var h = find(state.highlights, selectedHL);
+    $('hl-editor').style.display = h ? 'block' : 'none';
+    if (h) {
+      $('hl-editor-title').textContent = '‘' + h.title + '’에 담긴 스토리';
+      renderList('hlstory-list', 'hlstories', {
+        empty: '담긴 스토리가 없어요. 사진을 넣어보세요 📸',
+        title: function (s) { return s.text || '(문구 없음)'; },
+        sub: function (s) { return s.time || ''; },
+        edit: true, editing: editing.hlstory
+      });
+    }
+
+    // 친구 편집기
+    var f = find(state.friends, selectedFriend);
+    $('friend-editor').style.display = f ? 'block' : 'none';
+    if (f) {
+      $('friend-editor-title').textContent = f.name;
+      Array.prototype.forEach.call(document.querySelectorAll('#friend-editor .sub'), function (el) {
+        el.style.display = el.dataset.sub === friendSub ? 'block' : 'none';
+      });
+      Array.prototype.forEach.call($('friend-seg').children, function (b) { b.classList.toggle('active', b.dataset.sub === friendSub); });
+      renderList('fstory-list', 'fstories', {
+        empty: '이 친구의 스토리가 없어요.',
+        title: function (s) { return s.text || '(문구 없음)'; },
+        sub: function (s) { return s.time || '방금'; },
+        edit: true, editing: editing.fstory
+      });
+      renderList('fpost-list', 'fposts', {
+        empty: '이 친구의 게시물이 없어요.',
+        title: function (p) { return p.text || '(내용 없음)'; },
+        sub: function (p) { return (p.date || '방금 전') + ' · 댓글 ' + (p.comments || []).length + '개'; },
+        open: true, selected: selectedFPost, edit: true, editing: editing.fpost
+      });
+      renderCommentEditor('fpost', find(listOf('fposts'), selectedFPost));
+      renderList('freel-list', 'freels', {
+        empty: '이 친구의 릴스가 없어요.',
+        title: function (r) { return r.text || '(내용 없음)'; },
+        sub: function (r) { return r.views ? '조회 ' + r.views : '릴스'; },
+        edit: true, editing: editing.freel
+      });
+      var msgs = f.messages || [];
+      $('fmsg-list').innerHTML = msgs.length ? msgs.map(function (m) {
+        return '<div class="msg-line ' + (m.from === 'me' ? 'me' : '') + '">' +
+          (m.from === 'me' ? '<button class="msg-del" data-msg="' + esc(m.id) + '">✕</button>' : '') +
+          '<div class="msg-bubble">' + esc(m.text) + '</div>' +
+          (m.from === 'me' ? '' : '<button class="msg-del" data-msg="' + esc(m.id) + '">✕</button>') + '</div>';
+      }).join('') : '<div class="empty" style="padding:18px">메시지를 추가하면 DM 목록에 나타나요</div>';
+    }
+  }
+
+  function renderCommentEditor(prefix, post) {
+    var box = $(prefix + '-comment-editor');
+    if (!box) return;
+    if (!post) { box.style.display = 'none'; return; }
+    box.style.display = 'block';
+    var label = (post.text || '게시물');
+    if (label.length > 14) label = label.slice(0, 14) + '…';
+    $(prefix + '-comment-title').textContent = '‘' + label + '’ 댓글';
+
+    var who = [{ id: 'me', name: (state.profile.username || '나') + ' (나)', pic: state.profile.pic || DEFAULT_PIC }]
+      .concat(state.friends.map(function (f) { return { id: f.id, name: f.name, pic: f.pic }; }));
+    $(prefix + '-comment-who').innerHTML = who.map(function (w) {
+      return '<div class="chip' + (commentBy === w.id ? ' on' : '') + '" data-who="' + esc(w.id) + '">' +
+        '<img src="' + w.pic + '" alt="">' + esc(w.name) + '</div>';
+    }).join('');
+
+    var cs = post.comments || [];
+    $(prefix + '-comment-list').innerHTML = cs.length ? cs.map(function (c) {
+      return '<div class="item"><div class="item-info"><b>' + esc(commentAuthor(c)) + '</b>' +
+        '<small>' + esc(c.text) + '</small></div>' +
+        '<div class="item-acts"><button class="del" data-cdel="' + esc(c.id) + '" data-cp="' + prefix + '">' + ICON.del + '</button></div></div>';
+    }).join('') : '<div class="empty" style="padding:16px">아직 댓글이 없어요. 친구를 골라 댓글을 달아보세요 💬</div>';
+  }
+
+  function currentCommentPost(prefix) {
+    return prefix === 'post' ? find(state.posts, selectedPost) : find(listOf('fposts'), selectedFPost);
+  }
+  function addComment(prefix) {
+    var post = currentCommentPost(prefix);
+    if (!post) return;
+    var inp = $('inp-' + prefix + '-comment-text');
+    var text = inp.value.trim();
+    if (!text) { toast('댓글 내용을 입력해 주세요'); return; }
+    post.comments = post.comments || [];
+    post.comments.push({ id: uid(), by: commentBy, name: commentAuthor(commentBy), text: text });
+    inp.value = '';
+    renderAll(); scheduleSave();
+  }
+
+  function renderAll() { renderPreview(); renderEditor(); }
+
+  /* ================= 폼 (공통) ================= */
+  var FORMS = {
+    post:    { list:'posts',     pend:'post',    btn:'btn-submit-post', cancel:'btn-cancel-post',
+               title:'post-form-title', idle:'새 게시물', add:'＋ 추가하기', label:'게시물',
+               fields:{ text:'inp-post-text', date:'inp-post-date', like:'inp-post-like', comment:'inp-post-comment' } },
+    fpost:   { list:'fposts',    pend:'fpost',   btn:'btn-add-fpost', cancel:'btn-cancel-fpost',
+               add:'＋ 게시물 추가', label:'게시물',
+               fields:{ text:'inp-fpost-text', date:'inp-fpost-date', like:'inp-fpost-like' } },
+    reel:    { list:'reels',     pend:'reel',    btn:'btn-submit-reel', cancel:'btn-cancel-reel',
+               title:'reel-form-title', idle:'새 릴스', add:'＋ 릴스 추가', label:'릴스',
+               fields:{ text:'inp-reel-text', like:'inp-reel-like', comment:'inp-reel-comment',
+                        music:'inp-reel-music', views:'inp-reel-views' } },
+    freel:   { list:'freels',    pend:'freel',   btn:'btn-add-freel', cancel:'btn-cancel-freel',
+               add:'＋ 릴스 추가', label:'릴스',
+               fields:{ text:'inp-freel-text', like:'inp-freel-like', views:'inp-freel-views' } },
+    mystory: { list:'myStories', pend:'mystory', btn:'btn-add-mystory', cancel:'btn-cancel-mystory',
+               title:'mystory-form-title', idle:'일반 스토리', add:'＋ 일반 스토리 추가', label:'스토리',
+               fields:{ text:'inp-mystory-text', time:'inp-mystory-time' } },
+    hlstory: { list:'hlstories', pend:'hlstory', btn:'btn-add-hlstory', cancel:'btn-cancel-hlstory',
+               add:'＋ 스토리 담기', label:'스토리',
+               fields:{ text:'inp-hlstory-text', time:'inp-hlstory-time' } },
+    fstory:  { list:'fstories',  pend:'fstory',  btn:'btn-add-fstory', cancel:'btn-cancel-fstory',
+               add:'＋ 스토리 추가', label:'스토리',
+               fields:{ text:'inp-fstory-text', time:'inp-fstory-time' } }
+  };
+  var FIELD_DEFAULT = { date: '방금 전', like: '0개', time: '방금', music: '원본 오디오' };
+  var WITH_COMMENTS = { posts: 1, fposts: 1, reels: 1, freels: 1 };
+  var editing = {};
+
+  function formReset(pfx) {
+    var c = FORMS[pfx];
+    editing[pfx] = null;
+    setPend(c.pend, '');
+    Object.keys(c.fields).forEach(function (k) { $(c.fields[k]).value = ''; });
+    $(c.btn).textContent = c.add;
+    if (c.cancel) $(c.cancel).style.display = 'none';
+    if (c.title) $(c.title).textContent = c.idle;
+  }
+  function formEdit(pfx, id) {
+    var c = FORMS[pfx], it = find(listOf(c.list), id);
+    if (!it) return;
+    editing[pfx] = id;
+    setPend(c.pend, it.pic);
+    Object.keys(c.fields).forEach(function (k) { $(c.fields[k]).value = it[k] || ''; });
+    $(c.btn).textContent = '✓ 수정 저장';
+    if (c.cancel) $(c.cancel).style.display = 'inline-flex';
+    if (c.title) $(c.title).textContent = c.label + ' 수정 중';
+    if (pfx === 'post') { selectedPost = id; switchEditorTab('posts'); setPostKind('post'); }
+    if (pfx === 'reel') { switchEditorTab('posts'); setPostKind('reel'); }
+    renderEditor();
+  }
+  function formSubmit(pfx) {
+    var c = FORMS[pfx], list = listOf(c.list);
+    if (!pend[c.pend]) { toast('사진을 먼저 올려주세요 🖼'); return; }
+    var data = { pic: pend[c.pend] };
+    Object.keys(c.fields).forEach(function (k) {
+      var v = $(c.fields[k]).value.trim();
+      data[k] = v || FIELD_DEFAULT[k] || '';
+    });
+    var i = editing[pfx] ? findIdx(list, editing[pfx]) : -1;
+    if (i >= 0) {
+      list[i] = Object.assign({}, list[i], data);
+      toast('수정했어요 ✓');
+    } else {
+      var item = Object.assign({ id: uid() }, data);
+      if (WITH_COMMENTS[c.list]) item.comments = [];
+      if (c.list === 'posts' || c.list === 'reels') list.unshift(item); else list.push(item);
+      toast(c.label + ' 추가 완료 ✨');
+    }
+    formReset(pfx); renderAll(); scheduleSave();
+  }
+
+  function resetFriendSubForms() { ['fstory', 'fpost', 'freel'].forEach(formReset); }
+  function resetHLSubForm() { formReset('hlstory'); }
+
+  function setPostKind(kind) {
+    postKind = kind;
+    Array.prototype.forEach.call($('post-kind-seg').children, function (b) { b.classList.toggle('active', b.dataset.kind === kind); });
+    $('post-block').style.display = kind === 'post' ? 'block' : 'none';
+    $('reel-block').style.display = kind === 'reel' ? 'block' : 'none';
+  }
+
+  /* ---- 하이라이트 / 친구 정보 폼 ---- */
+  function resetHLForm() {
+    editingHL = null; setPend('hl', ''); $('inp-hl-title').value = '';
+    $('btn-submit-hl').textContent = '＋ 하이라이트 만들기';
+    $('btn-cancel-hl').style.display = 'none';
+    $('hl-form-title').textContent = '하이라이트';
+  }
+  function startEditHL(id) {
+    var h = find(state.highlights, id); if (!h) return;
+    if (selectedHL !== id) resetHLSubForm();
+    editingHL = id; selectedHL = id; setPend('hl', h.cover || '');
+    $('inp-hl-title').value = h.title || '';
+    $('btn-submit-hl').textContent = '✓ 수정 저장';
+    $('btn-cancel-hl').style.display = 'inline-flex';
+    $('hl-form-title').textContent = '하이라이트 수정 중';
+    renderEditor();
+  }
+  function submitHL() {
+    var title = $('inp-hl-title').value.trim();
+    if (!title) { toast('하이라이트 이름을 입력해 주세요 ✍️'); return; }
+    if (editingHL) {
+      var i = findIdx(state.highlights, editingHL);
+      if (i >= 0) { state.highlights[i].title = title; state.highlights[i].cover = pend.hl || state.highlights[i].cover || ''; }
+      toast('하이라이트를 수정했어요 ✓');
+    } else {
+      var h = { id: uid(), title: title, cover: pend.hl || '', stories: [] };
+      state.highlights.push(h); selectedHL = h.id;
+      toast('하이라이트를 만들었어요 ✨');
+    }
+    resetHLForm(); renderAll(); scheduleSave();
+  }
+
+  function resetFriendForm() {
+    editingFriend = null; setPend('friend', '');
+    $('inp-friend-name').value = ''; $('inp-friend-time').value = '';
+    $('inp-friend-active').value = ''; $('inp-friend-unread').checked = false;
+    $('friend-form-title').textContent = '친구 추가';
+    $('btn-submit-friend').textContent = '＋ 친구 추가';
+    $('btn-cancel-friend').style.display = 'none';
+  }
+  function startEditFriend(id) {
+    var f = find(state.friends, id); if (!f) return;
+    if (selectedFriend !== id) resetFriendSubForms();
+    editingFriend = id; selectedFriend = id; selectedFPost = null;
+    setPend('friend', f.pic === DEFAULT_PIC ? '' : f.pic);
+    $('inp-friend-name').value = f.name || '';
+    $('inp-friend-time').value = f.time || '';
+    $('inp-friend-active').value = f.active || '';
+    $('inp-friend-unread').checked = !!f.unread;
+    $('friend-form-title').textContent = '친구 정보 수정';
+    $('btn-submit-friend').textContent = '✓ 수정 저장';
+    $('btn-cancel-friend').style.display = 'inline-flex';
+    renderEditor(); $('editor-scroll').scrollTop = 0;
+  }
+  function submitFriend() {
+    var name = $('inp-friend-name').value.trim();
+    if (!name) { toast('친구 이름을 입력해 주세요 ✍️'); return; }
+    var data = {
+      name: name, pic: pend.friend || DEFAULT_PIC,
+      time: $('inp-friend-time').value.trim() || '방금',
+      active: $('inp-friend-active').value.trim() || '활동 중',
+      unread: $('inp-friend-unread').checked
+    };
+    if (editingFriend) {
+      var i = findIdx(state.friends, editingFriend);
+      if (i >= 0) {
+        if (!pend.friend) data.pic = state.friends[i].pic;
+        state.friends[i] = Object.assign({}, state.friends[i], data);
+      }
+      toast('친구 정보를 수정했어요 ✓');
+    } else {
+      var f = Object.assign({ id: uid(), stories: [], posts: [], reels: [], messages: [] }, data);
+      state.friends.push(f); selectedFriend = f.id; friendSub = 'stories';
+      toast('친구를 추가했어요 👭');
+    }
+    resetFriendForm(); renderAll(); scheduleSave();
+  }
+
+  function addMsg() {
+    var f = find(state.friends, selectedFriend); if (!f) return;
+    var text = $('inp-msg-text').value.trim();
+    if (!text) { toast('메시지 내용을 입력해 주세요'); return; }
+    f.messages = f.messages || [];
+    f.messages.push({ id: uid(), from: currentSender, text: text, time: $('inp-msg-time').value.trim() });
+    $('inp-msg-text').value = '';
+    renderAll(); scheduleSave();
+  }
+  function addExplore() {
+    if (!pend.explore) { toast('사진을 먼저 올려주세요 🖼'); return; }
+    state.explore.push({ id: uid(), pic: pend.explore });
+    setPend('explore', '');
+    renderAll(); scheduleSave(); toast('추천 게시물을 추가했어요 🔍');
+  }
+
+  /* ================= 이벤트 ================= */
+  [['inp-username','username'],['inp-name','name'],['inp-bio','bio'],
+   ['inp-followers','followers'],['inp-following','following'],
+   ['inp-noti','noti'],['inp-time','time']].forEach(function (pair) {
+    $(pair[0]).addEventListener('input', function () {
+      state.profile[pair[1]] = this.value; renderPreview(); scheduleSave();
+    });
+  });
+  $('inp-private').addEventListener('change', function () {
+    state.profile.isPrivate = this.checked; renderPreview(); scheduleSave();
+  });
+
+  bindDrop('drop-profile', 1, true, function (u) {
+    shrink(u, 640, 0.9).then(function (v) {
+      state.profile.pic = v; setPend('profile', v); renderPreview(); scheduleSave();
+    });
+  });
+  bindDrop('drop-post', 0.8, false, function (u) { setPend('post', u); });
+  bindDrop('drop-reel', 0.5625, false, function (u) { setPend('reel', u); });
+  bindDrop('drop-freel', 0.5625, false, function (u) { setPend('freel', u); });
+  bindDrop('drop-mystory', 0.5625, false, function (u) { setPend('mystory', u); });
+  bindDrop('drop-hl', 1, true, function (u) { setPend('hl', u); });
+  bindDrop('drop-hlstory', 0.5625, false, function (u) { setPend('hlstory', u); });
+  bindDrop('drop-friend', 1, true, function (u) { shrink(u, 480, 0.9).then(function (v) { setPend('friend', v); }); });
+  bindDrop('drop-fstory', 0.5625, false, function (u) { setPend('fstory', u); });
+  bindDrop('drop-fpost', 0.8, false, function (u) { setPend('fpost', u); });
+  bindDrop('drop-explore', 1, false, function (u) { setPend('explore', u); });
+
+  Object.keys(FORMS).forEach(function (pfx) {
+    var c = FORMS[pfx];
+    $(c.btn).addEventListener('click', function () { formSubmit(pfx); });
+    if (c.cancel) $(c.cancel).addEventListener('click', function () { formReset(pfx); renderEditor(); });
+  });
+  $('post-kind-seg').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-kind]'); if (b) setPostKind(b.dataset.kind);
+  });
+  $('btn-submit-hl').addEventListener('click', submitHL);
+  $('btn-cancel-hl').addEventListener('click', function () { resetHLForm(); renderEditor(); });
+  $('btn-submit-friend').addEventListener('click', submitFriend);
+  $('btn-cancel-friend').addEventListener('click', function () { resetFriendForm(); renderEditor(); });
+  $('btn-add-msg').addEventListener('click', addMsg);
+  $('btn-add-explore').addEventListener('click', addExplore);
+  $('btn-add-post-comment').addEventListener('click', function () { addComment('post'); });
+  $('btn-add-fpost-comment').addEventListener('click', function () { addComment('fpost'); });
+  ['post', 'fpost'].forEach(function (pfx) {
+    $('inp-' + pfx + '-comment-text').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); addComment(pfx); }
+    });
+  });
+  $('inp-msg-text').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addMsg(); }
+  });
+  $('sender-segment').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-from]'); if (!b) return;
+    currentSender = b.dataset.from;
+    Array.prototype.forEach.call(this.children, function (x) { x.classList.toggle('active', x === b); });
+  });
+  $('friend-seg').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-sub]'); if (!b) return;
+    friendSub = b.dataset.sub; renderEditor();
+  });
+
+  // 리스트 공통 동작 (순서 · 복사 · 수정 · 삭제 · 선택)
+  function onListClick(e) {
+    var btn = e.target.closest('button[data-act]');
+    if (btn) {
+      var act = btn.dataset.act, key = btn.dataset.key, id = btn.dataset.id;
+      var list = listOf(key), idx = findIdx(list, id);
+      if (idx < 0) return;
+      if (act === 'del') {
+        if (!confirm('삭제할까요?')) return;
+        list.splice(idx, 1);
+        var dpfx = { posts: 'post', reels: 'reel', myStories: 'mystory', hlstories: 'hlstory',
+                     fstories: 'fstory', fposts: 'fpost', freels: 'freel' }[key];
+        if (dpfx && editing[dpfx] === id) formReset(dpfx);
+        if (key === 'posts' && selectedPost === id) selectedPost = null;
+        if (key === 'fposts' && selectedFPost === id) selectedFPost = null;
+        if (key === 'highlights') { if (editingHL === id) resetHLForm(); if (selectedHL === id) selectedHL = null; }
+        if (key === 'friends') {
+          if (editingFriend === id) resetFriendForm();
+          if (selectedFriend === id) { selectedFriend = null; selectedFPost = null; resetFriendSubForms(); }
+          if (commentBy === id) commentBy = 'me';
+        }
+        if (key === 'highlights' && selectedHL === id) resetHLSubForm();
+        toast('삭제했어요');
+      } else if (act === 'copy') {
+        var clone = JSON.parse(JSON.stringify(list[idx]));
+        clone.id = uid();
+        if (clone.stories) clone.stories.forEach(function (s) { s.id = uid(); });
+        if (clone.reels) clone.reels.forEach(function (s) {
+          s.id = uid();
+          if (s.comments) s.comments.forEach(function (c) { c.id = uid(); });
+        });
+        if (clone.posts) clone.posts.forEach(function (s) {
+          s.id = uid();
+          if (s.comments) s.comments.forEach(function (c) { c.id = uid(); });
+        });
+        if (clone.messages) clone.messages.forEach(function (s) { s.id = uid(); });
+        if (clone.comments) clone.comments.forEach(function (c) { c.id = uid(); });
+        if (clone.title) clone.title = clone.title + ' 복사본';
+        if (key === 'friends') clone.name = clone.name + '_2';
+        list.splice(idx + 1, 0, clone);
+        toast('복사했어요 ⧉');
+      } else if (act === 'up' && idx > 0) { list.splice(idx - 1, 0, list.splice(idx, 1)[0]); }
+      else if (act === 'down' && idx < list.length - 1) { list.splice(idx + 1, 0, list.splice(idx, 1)[0]); }
+      else if (act === 'edit') {
+        if (key === 'highlights') startEditHL(id);
+        else if (key === 'friends') startEditFriend(id);
+        else {
+          var pfx = { posts: 'post', reels: 'reel', myStories: 'mystory', hlstories: 'hlstory',
+                      fstories: 'fstory', fposts: 'fpost', freels: 'freel' }[key];
+          if (pfx) formEdit(pfx, id);
+        }
+        return;
+      }
+      renderAll(); scheduleSave();
+      return;
+    }
+    var open = e.target.closest('[data-open]');
+    if (open) {
+      var parts = open.dataset.open.split(':');
+      if (parts[0] === 'highlights') {
+        if (editingHL && editingHL !== parts[1]) resetHLForm();
+        if (selectedHL !== parts[1]) resetHLSubForm();
+        selectedHL = (selectedHL === parts[1] ? null : parts[1]);
+      }
+      if (parts[0] === 'friends') {
+        if (editingFriend && editingFriend !== parts[1]) resetFriendForm();
+        if (selectedFriend !== parts[1]) resetFriendSubForms();
+        selectedFriend = (selectedFriend === parts[1] ? null : parts[1]);
+        friendSub = 'stories'; selectedFPost = null;
+      }
+      if (parts[0] === 'posts') {
+        if (editing.post && editing.post !== parts[1]) formReset('post');
+        selectedPost = (selectedPost === parts[1] ? null : parts[1]);
+      }
+      if (parts[0] === 'fposts') selectedFPost = (selectedFPost === parts[1] ? null : parts[1]);
+      renderEditor();
+      return;
+    }
+    var chip = e.target.closest('[data-who]');
+    if (chip) { commentBy = chip.dataset.who; renderEditor(); return; }
+    var cdel = e.target.closest('button[data-cdel]');
+    if (cdel) {
+      var cpost = currentCommentPost(cdel.dataset.cp);
+      if (!cpost) return;
+      cpost.comments = (cpost.comments || []).filter(function (c) { return c.id !== cdel.dataset.cdel; });
+      renderAll(); scheduleSave();
+      return;
+    }
+    var md = e.target.closest('button[data-msg]');
+    if (md) {
+      var f = find(state.friends, selectedFriend); if (!f) return;
+      f.messages = (f.messages || []).filter(function (m) { return m.id !== md.dataset.msg; });
+      renderAll(); scheduleSave();
+    }
+  }
+  $('editor-scroll').addEventListener('click', onListClick);
+
+  /* ---------- 탭 / 보기 모드 ---------- */
+  function switchEditorTab(name) {
+    Array.prototype.forEach.call($('tabs').children, function (b) { b.classList.toggle('active', b.dataset.tab === name); });
+    Array.prototype.forEach.call(document.querySelectorAll('.panel'), function (p) { p.classList.toggle('active', p.dataset.panel === name); });
+    $('editor-scroll').scrollTop = 0;
+    try { localStorage.setItem('shoostargram-tab', name); } catch (e) {}
+  }
+  $('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-tab]'); if (b) switchEditorTab(b.dataset.tab);
+  });
+  function setView(view) {
+    document.body.setAttribute('data-view', view);
+    Array.prototype.forEach.call($('view-toggle').children, function (b) { b.classList.toggle('active', b.dataset.view === view); });
+    try { localStorage.setItem('shoostargram-view', view); } catch (e) {}
+    setTimeout(fitPhone, 30);
+  }
+  $('view-toggle').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-view]'); if (b) setView(b.dataset.view);
+  });
+  function setPane(pane) {
+    document.body.setAttribute('data-pane', pane);
+    Array.prototype.forEach.call($('pane-switch').children, function (b) { b.classList.toggle('active', b.dataset.pane === pane); });
+    setTimeout(fitPhone, 30);
+  }
+  $('pane-switch').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-pane]'); if (b) setPane(b.dataset.pane);
+  });
+
+  function fitPhone() {
+    var stage = $('stage'), wrap = $('phone-wrap'), frame = $('export-target');
+    if (!stage || !wrap || !frame) return;
+    var cs = window.getComputedStyle(stage);
+    var availW = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var availH = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    if (availW <= 0 || availH <= 0) return;
+    var scale = Math.max(0.3, Math.min(1, availW / 406, availH / 860));
+    frame.style.transform = 'scale(' + scale + ')';
+    wrap.style.width = (406 * scale) + 'px';
+    wrap.style.height = (860 * scale) + 'px';
+  }
+  window.addEventListener('resize', fitPhone);
+  window.addEventListener('orientationchange', function () { setTimeout(fitPhone, 200); });
+
+  /* ---------- 미리보기 내비게이션 (내보내기 파일과 공유) ---------- */
+  var PAGES = ['profile', 'home', 'explore', 'reels', 'dm'];
+  var NAV = { home: 'nav-home', reels: 'nav-reels', explore: 'nav-explore', profile: 'nav-profile' };
+  window.showPage = function (name) {
+    PAGES.forEach(function (p) {
+      var el = document.getElementById('page-' + p);
+      if (el) el.classList.toggle('on', p === name);
+    });
+    var activeNav = NAV[name] || (name === 'dm' ? 'nav-home' : null);
+    Object.keys(NAV).forEach(function (k) {
+      var el = document.getElementById(NAV[k]);
+      if (el) el.classList.toggle('active', NAV[k] === activeNav);
+    });
+    var pi = document.getElementById('icon-profile-wrap');
+    if (pi) pi.classList.toggle('active', name === 'profile');
+    var sc = document.querySelector('.screen-area');
+    if (sc) { sc.classList.toggle('reels-mode', name === 'reels'); sc.classList.toggle('dm-mode', name === 'dm'); }
+    window.closeThread(); window.closeModal(); window.closeStory();
+  };
+  window.showGrid = function (kind) {
+    var map = { posts: ['display-grid', 'gtab-posts'], reels: ['display-reel-grid', 'gtab-reels'], tagged: ['display-tagged', 'gtab-tagged'] };
+    Object.keys(map).forEach(function (k) {
+      var box = document.getElementById(map[k][0]), tab = document.getElementById(map[k][1]);
+      if (box) box.style.display = (k === kind) ? (k === 'tagged' ? 'block' : 'grid') : 'none';
+      if (tab) tab.classList.toggle('active', k === kind);
+    });
+  };
+  window.openModal = function (postId) {
+    var el = document.getElementById(postId); if (!el) return;
+    document.getElementById('modal-feed-content').innerHTML = el.outerHTML;
+    document.getElementById('postModal').classList.add('show');
+  };
+  window.closeModal = function () {
+    var m = document.getElementById('postModal'); if (!m) return;
+    m.classList.remove('show');
+    document.getElementById('modal-feed-content').innerHTML = '';
+  };
+  window.openThread = function (id) {
+    window.closeThread();
+    var el = document.getElementById(id); if (el) el.classList.add('show');
+  };
+  window.closeThread = function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.thread'), function (t) { t.classList.remove('show'); });
+  };
+  window.openStory = function (id) {
+    window.closeStory();
+    var v = document.getElementById(id); if (!v) return;
+    v.dataset.idx = '0';
+    window.storyNav(id, 0);
+    v.classList.add('show');
+  };
+  window.closeStory = function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.story-viewer'), function (v) { v.classList.remove('show'); });
+  };
+  window.storyNav = function (id, dir) {
+    var v = document.getElementById(id); if (!v) return;
+    var slides = v.querySelectorAll('.sv-slide'), bars = v.querySelectorAll('.sv-bar');
+    var idx = parseInt(v.dataset.idx || '0', 10) + dir;
+    if (idx < 0) idx = 0;
+    if (idx >= slides.length) { window.closeStory(); return; }
+    v.dataset.idx = idx;
+    Array.prototype.forEach.call(slides, function (s, i) { s.classList.toggle('on', i === idx); });
+    Array.prototype.forEach.call(bars, function (b, i) {
+      b.classList.toggle('done', i < idx); b.classList.toggle('now', i === idx);
+    });
+    var t = document.getElementById(id + '-time');
+    if (t) t.textContent = slides[idx].dataset.time || '';
+  };
+
+  /* ================= 내보내기 ================= */
+  function downloadBlob(content, filename, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  $('btn-download-html').addEventListener('click', function () {
+    var frame = $('export-target').cloneNode(true);
+    frame.style.transform = '';
+    var title = state.profile.username || 'shoostargram';
+    var runtime = [
+      'var PAGES=["profile","home","explore","reels","dm"];',
+      'var NAV={home:"nav-home",reels:"nav-reels",explore:"nav-explore",profile:"nav-profile"};',
+      'function showPage(name){',
+      ' PAGES.forEach(function(p){var el=document.getElementById("page-"+p); if(el)el.classList.toggle("on",p===name);});',
+      ' var a=NAV[name]||(name==="dm"?"nav-home":null);',
+      ' Object.keys(NAV).forEach(function(k){var el=document.getElementById(NAV[k]); if(el)el.classList.toggle("active",NAV[k]===a);});',
+      ' var pi=document.getElementById("icon-profile-wrap"); if(pi)pi.classList.toggle("active",name==="profile");',
+      ' var sc=document.querySelector(".screen-area");',
+      ' if(sc){sc.classList.toggle("reels-mode",name==="reels");sc.classList.toggle("dm-mode",name==="dm");}',
+      ' closeThread(); closeModal(); closeStory();}',
+      'function showGrid(kind){var map={posts:["display-grid","gtab-posts"],reels:["display-reel-grid","gtab-reels"],tagged:["display-tagged","gtab-tagged"]};',
+      ' Object.keys(map).forEach(function(k){var b=document.getElementById(map[k][0]),t=document.getElementById(map[k][1]);',
+      '  if(b)b.style.display=(k===kind)?(k==="tagged"?"block":"grid"):"none"; if(t)t.classList.toggle("active",k===kind);});}',
+      'function openModal(id){var el=document.getElementById(id); if(!el)return;',
+      ' document.getElementById("modal-feed-content").innerHTML=el.outerHTML;',
+      ' document.getElementById("postModal").classList.add("show");}',
+      'function closeModal(){var m=document.getElementById("postModal"); if(!m)return;',
+      ' m.classList.remove("show"); document.getElementById("modal-feed-content").innerHTML="";}',
+      'function openThread(id){closeThread(); var el=document.getElementById(id); if(el)el.classList.add("show");}',
+      'function closeThread(){Array.prototype.forEach.call(document.querySelectorAll(".thread"),function(t){t.classList.remove("show");});}',
+      'function openStory(id){closeStory(); var v=document.getElementById(id); if(!v)return;',
+      ' v.dataset.idx="0"; storyNav(id,0); v.classList.add("show");}',
+      'function closeStory(){Array.prototype.forEach.call(document.querySelectorAll(".story-viewer"),function(v){v.classList.remove("show");});}',
+      'function storyNav(id,dir){var v=document.getElementById(id); if(!v)return;',
+      ' var slides=v.querySelectorAll(".sv-slide"),bars=v.querySelectorAll(".sv-bar");',
+      ' var idx=parseInt(v.dataset.idx||"0",10)+dir;',
+      ' if(idx<0)idx=0; if(idx>=slides.length){closeStory();return;}',
+      ' v.dataset.idx=idx;',
+      ' Array.prototype.forEach.call(slides,function(s,i){s.classList.toggle("on",i===idx);});',
+      ' Array.prototype.forEach.call(bars,function(b,i){b.classList.toggle("done",i<idx);b.classList.toggle("now",i===idx);});',
+      ' var t=document.getElementById(id+"-time"); if(t)t.textContent=slides[idx].dataset.time||"";}',
+      'function fit(){var f=document.getElementById("export-target"),w=document.getElementById("phone-wrap");',
+      ' var s=Math.max(0.3,Math.min(1,(window.innerWidth-24)/406,(window.innerHeight-24)/860));',
+      ' f.style.transform="scale("+s+")"; w.style.width=(406*s)+"px"; w.style.height=(860*s)+"px";}',
+      'window.addEventListener("resize",fit); fit();'
+    ].join('\n');
+
+    var out = '<!DOCTYPE html>\n<html lang="ko">\n<head>\n<meta charset="UTF-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">\n' +
+      '<title>' + esc(title) + ' · Shoostargram</title>\n<style>\n' +
+      'html,body{height:100%}\n' +
+      'body{margin:0;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;' +
+      'font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",Roboto,sans-serif}\n' +
+      '#phone-wrap{position:relative}\n#export-target{position:absolute;top:0;left:0;transform-origin:top left}\n' +
+      $('phone-style').innerHTML + '\n</style>\n</head>\n<body>\n<div id="phone-wrap">\n' +
+      frame.outerHTML + '\n</div>\n<script>\n' + runtime + '\n<\/script>\n</body>\n</html>';
+
+    downloadBlob(out, 'shoostargram-' + title + '.html', 'text/html;charset=utf-8');
+    toast('HTML 파일을 저장했어요 📄');
+  });
+
+  $('btn-export-json').addEventListener('click', function () {
+    downloadBlob(JSON.stringify(state), 'shoostargram-backup.json', 'application/json');
+    toast('백업 파일을 저장했어요 💾');
+  });
+  $('btn-import-json').addEventListener('click', function () { $('inp-import-json').click(); });
+  $('inp-import-json').addEventListener('change', function () {
+    var file = this.files && this.files[0]; this.value = '';
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        if (!data || typeof data !== 'object' || !data.profile) throw new Error('bad');
+        if (!confirm('현재 작업 내용을 덮어씁니다. 계속할까요?')) return;
+        state = normalize(data);
+        selectedHL = null; selectedFriend = null; selectedPost = null; selectedFPost = null;
+        syncInputs(); Object.keys(FORMS).forEach(formReset); resetHLForm(); resetFriendForm(); renderAll(); scheduleSave();
+        toast('백업을 불러왔어요 ✓');
+      } catch (e) { toast('올바른 백업 파일이 아니에요 😢'); }
+    };
+    reader.readAsText(file);
+  });
+  $('btn-reset').addEventListener('click', function () {
+    if (!confirm('모든 내용이 지워집니다. 정말 초기화할까요?')) return;
+    state = blankState(); selectedHL = null; selectedFriend = null; selectedPost = null; selectedFPost = null;
+    Store.clear();
+    syncInputs(); Object.keys(FORMS).forEach(formReset); resetHLForm(); resetFriendForm(); renderAll(); scheduleSave();
+    toast('초기화했어요');
+  });
+
+  /* ================= 불러오기 / 마이그레이션 ================= */
+  function cleanStory(s) {
+    return { id: s.id || uid(), pic: s.pic, text: s.text || '', time: s.time || '' };
+  }
+  function cleanPost(p) {
+    return {
+      id: p.id || uid(), pic: p.pic, text: p.text || '', date: p.date || '방금 전',
+      like: p.like || '0개', comment: p.comment || '',
+      comments: (Array.isArray(p.comments) ? p.comments : []).filter(function (c) { return c && c.text; })
+        .map(function (c) { return { id: c.id || uid(), by: c.by || 'me', name: c.name || '', text: c.text }; })
+    };
+  }
+  function cleanReel(r) {
+    return {
+      id: r.id || uid(), pic: r.pic, text: r.text || '', like: r.like || '0개',
+      comment: r.comment || '', music: r.music || '원본 오디오', views: r.views || '',
+      comments: (Array.isArray(r.comments) ? r.comments : []).filter(function (c) { return c && c.text; })
+        .map(function (c) { return { id: c.id || uid(), by: c.by || 'me', name: c.name || '', text: c.text }; })
+    };
+  }
+  function normalize(data) {
+    var base = blankState();
+    var s = {
+      version: 4,
+      profile: Object.assign(base.profile, data.profile || {}),
+      posts: (Array.isArray(data.posts) ? data.posts : []).filter(function (x) { return x && x.pic; }).map(cleanPost),
+      reels: (Array.isArray(data.reels) ? data.reels : []).filter(function (x) { return x && x.pic; }).map(cleanReel),
+      myStories: (Array.isArray(data.myStories) ? data.myStories : []).filter(function (x) { return x && x.pic; }).map(cleanStory),
+      highlights: [],
+      friends: [],
+      explore: (Array.isArray(data.explore) ? data.explore : []).filter(function (x) { return x && x.pic; })
+        .map(function (e) { return { id: e.id || uid(), pic: e.pic }; })
+    };
+
+    // 예전 버전(v3 이하) 자료 옮겨오기
+    if (!data.myStories && Array.isArray(data.stories)) {
+      s.myStories = data.stories.filter(function (x) { return x && x.pic; }).map(cleanStory);
+    }
+    (Array.isArray(data.highlights) ? data.highlights : []).forEach(function (h) {
+      if (!h) return;
+      if (Array.isArray(h.stories)) {
+        s.highlights.push({ id: h.id || uid(), title: h.title || h.text || '하이라이트', cover: h.cover || '',
+                            stories: h.stories.filter(function (x) { return x && x.pic; }).map(cleanStory) });
+      } else if (h.pic) {   // 예전 형식: 사진 1장 + 이름
+        s.highlights.push({ id: h.id || uid(), title: h.text || h.title || '하이라이트', cover: h.pic,
+                            stories: [cleanStory({ pic: h.pic, text: '' })] });
+      }
+    });
+    var rawFriends = Array.isArray(data.friends) ? data.friends : (Array.isArray(data.dms) ? data.dms : []);
+    rawFriends.forEach(function (f) {
+      if (!f || !f.name) return;
+      s.friends.push({
+        id: f.id || uid(), name: f.name, pic: f.pic || DEFAULT_PIC,
+        time: f.time || '방금', active: f.active || '활동 중', unread: !!f.unread,
+        stories: (Array.isArray(f.stories) ? f.stories : []).filter(function (x) { return x && x.pic; }).map(cleanStory),
+        posts: (Array.isArray(f.posts) ? f.posts : []).filter(function (x) { return x && x.pic; }).map(cleanPost),
+        reels: (Array.isArray(f.reels) ? f.reels : []).filter(function (x) { return x && x.pic; }).map(cleanReel),
+        messages: (Array.isArray(f.messages) ? f.messages : []).filter(function (m) { return m && m.text; })
+          .map(function (m) { return { id: m.id || uid(), from: m.from === 'me' ? 'me' : 'them', text: m.text, time: m.time || '' }; })
+      });
+    });
+    if (!s.profile.pic) s.profile.pic = DEFAULT_PIC;
+    return s;
+  }
+
+  function syncInputs() {
+    var p = state.profile;
+    $('inp-username').value = p.username || '';
+    $('inp-name').value = p.name || '';
+    $('inp-bio').value = p.bio || '';
+    $('inp-followers').value = p.followers || '';
+    $('inp-following').value = p.following || '';
+    $('inp-noti').value = p.noti || '';
+    $('inp-time').value = p.time || '';
+    $('inp-private').checked = !!p.isPrivate;
+    setPend('profile', p.pic || DEFAULT_PIC);
+  }
+
+  (function init() {
+    var v = null, t = null;
+    try { v = localStorage.getItem('shoostargram-view'); t = localStorage.getItem('shoostargram-tab'); } catch (e) {}
+    setView(v || (window.innerWidth <= 900 ? 'mobile' : 'desktop'));
+    setPane('editor');
+    if (t) switchEditorTab(t);
+    Object.keys(FORMS).forEach(formReset);
+    resetHLForm(); resetFriendForm(); setPostKind('post'); setPend('explore', '');
+  })();
+
+  Store.get().then(function (saved) {
+    if (saved && saved.profile) { state = normalize(saved); setSaveStatus('불러왔어요', false); }
+    else setSaveStatus('자동 저장', false);
+    syncInputs(); renderAll(); fitPhone();
+  })['catch'](function () {
+    setSaveStatus('자동 저장', false);
+    syncInputs(); renderAll(); fitPhone();
+  });
+
+  window.addEventListener('beforeunload', function () {
+    if (saveTimer) { clearTimeout(saveTimer); Store.set(JSON.parse(JSON.stringify(state))); }
+  });
+  window.addEventListener('load', fitPhone);
+})();
 </script>
 
 </body>
