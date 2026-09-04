@@ -285,7 +285,7 @@ textarea{line-height:1.5}
 }
 .status-bar{height:54px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 4px; font-size:15px; font-weight:600; z-index:90; letter-spacing:-.5px; color:#000; flex-shrink:0}
 .status-bar .sb-right{display:flex; gap:6px; align-items:center}
-.page{flex:1; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; background:#fff; display:none}
+.page{flex:1; overflow-y:auto; overflow-x:hidden; -ms-overflow-style:none; scrollbar-width:none; background:#fff; display:none}
 .page::-webkit-scrollbar{display:none}
 .page.on{display:block}
 .pad-nav{padding-bottom:66px}
@@ -296,22 +296,25 @@ textarea{line-height:1.5}
 .icon-wrap{position:relative; display:flex}
 
 /* 프로필 */
-.profile-info{padding:14px 20px 0; display:flex; align-items:center; gap:18px}
+.profile-info{padding:18px 20px 0; display:flex; align-items:center; gap:18px}
 .profile-img-wrap{position:relative; width:86px; height:86px; border-radius:50%; padding:3px; background:#dbdbdb}
 .profile-img-wrap.has-story{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); cursor:pointer}
 .profile-img{width:100%; height:100%; border-radius:50%; border:2px solid #fff; object-fit:cover; background:#eee}
 .my-story-badge{position:absolute; bottom:0; right:0; width:24px; height:24px; background:#0095f6; border-radius:50%; border:3px solid #fff; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; font-weight:700; line-height:1; z-index:2}
-.profile-right{flex:1; min-width:0}
-.profile-name{font-size:15px; font-weight:700; margin-bottom:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.profile-right{flex:1; min-width:0; overflow:hidden}
+.profile-name{
+  font-size:15px; font-weight:700; margin-bottom:9px; line-height:1.32; word-break:break-word;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
 .stats-group{display:flex; text-align:center}
 .stats-group>div{flex:1}
 .stat-num{display:block; font-weight:700; font-size:17px}
 .stat-label{font-size:13px; color:#262626; margin-top:-2px}
-.bio-area{padding:12px 20px; font-size:14px; line-height:1.45; white-space:pre-wrap; color:#262626; word-break:break-word}
-.action-btns{padding:0 16px 14px; display:flex; gap:6px}
+.bio-area{padding:14px 20px 0; font-size:14px; line-height:1.45; white-space:pre-wrap; color:#262626; word-break:break-word}
+.action-btns{padding:16px 16px 14px; display:flex; gap:6px}
 .btn-profile{flex:1; background:#efefef; color:#000; border:none; border-radius:8px; padding:8px; font-weight:600; font-size:13px; text-align:center}
 .btn-profile.icon-only{flex:0 0 34px; display:flex; align-items:center; justify-content:center}
-.highlights{display:flex; gap:15px; padding:2px 16px 16px; overflow-x:auto}
+.highlights{display:flex; gap:15px; padding:4px 16px 18px; overflow-x:auto}
 .highlights::-webkit-scrollbar{display:none}
 .highlights:empty{display:none}
 .highlight-item{display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; cursor:pointer}
