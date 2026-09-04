@@ -350,7 +350,7 @@ textarea{line-height:1.5}
 .feed-user-ring{width:34px; height:34px; border-radius:50%; padding:2px; background:linear-gradient(45deg,#f09433,#bc1888); flex-shrink:0}
 .feed-user-ring.plain{background:#dbdbdb}
 .feed-user-img{width:100%; height:100%; border-radius:50%; object-fit:cover; border:1.5px solid #fff}
-.feed-main-img{width:100%; display:block; aspect-ratio:4/5; object-fit:cover; background:#efefef}
+.feed-main-img{width:100%; display:block; height:auto; background:#efefef}
 .feed-actions{padding:11px 14px 7px; display:flex; justify-content:space-between; align-items:center}
 .action-left{display:flex; gap:16px; align-items:center}
 .fa-item{display:flex; align-items:center; gap:6px; font-size:14px; font-weight:600; color:#262626}
@@ -361,7 +361,6 @@ textarea{line-height:1.5}
 .fc svg{flex-shrink:0; margin-top:3px}
 .feed-caption{padding:0 14px; font-size:13.5px; line-height:1.45; color:#262626; word-break:break-word; white-space:pre-wrap}
 .feed-caption span{font-weight:600; margin-right:5px; color:#000}
-.feed-comments{padding:4px 14px 0; font-size:13.5px; color:#8e8e8e}
 .feed-date{padding:0 14px; font-size:11px; color:#a8a8a8; margin-top:5px}
 .feed-empty{text-align:center; padding:70px 26px; color:#b8b8b8; font-size:13px; line-height:1.9}
 .feed-end{text-align:center; padding:26px; color:#c9c9c9; font-size:12px}
@@ -1451,16 +1450,11 @@ textarea{line-height:1.5}
 
   function commentsBlockHTML(p) {
     var cs = p.comments || [];
-    if (!cs.length) return p.comment ? '<div class="feed-comments">댓글 ' + esc(p.comment) + '개 모두 보기</div>' : '';
-    var total = (p.comment || '').trim() || cs.length;
-    var shown = cs.length > 2 ? cs.slice(cs.length - 2) : cs;
-    var html = (cs.length > 2 || (p.comment || '').trim())
-      ? '<div class="feed-comments">댓글 ' + esc(total) + '개 모두 보기</div>' : '';
-    html += '<div class="feed-comment-list">' + shown.map(function (c) {
+    if (!cs.length) return '';
+    return '<div class="feed-comment-list">' + cs.map(function (c) {
       return '<div class="fc"><b>' + esc(commentAuthor(c)) + '</b>' +
         '<span class="fc-text">' + esc(c.text) + '</span>' + HEART_SM + '</div>';
     }).join('') + '</div>';
-    return html;
   }
 
   function feedPostHTML(o) {
@@ -2066,7 +2060,7 @@ textarea{line-height:1.5}
       state.profile.pic = v; setPend('profile', v); renderPreview(); scheduleSave();
     });
   });
-  bindDrop('drop-post', 0.8, false, function (u) { setPend('post', u); });
+  bindDrop('drop-post', 'free', false, function (u) { setPend('post', u); });
   bindDrop('drop-reel', 0.5625, false, function (u) { setPend('reel', u); });
   bindDrop('drop-freel', 0.5625, false, function (u) { setPend('freel', u); });
   bindDrop('drop-mystory', 0.5625, false, function (u) { setPend('mystory', u); });
@@ -2074,7 +2068,7 @@ textarea{line-height:1.5}
   bindDrop('drop-hlstory', 0.5625, false, function (u) { setPend('hlstory', u); });
   bindDrop('drop-friend', 1, true, function (u) { shrink(u, 480, 0.9).then(function (v) { setPend('friend', v); }); });
   bindDrop('drop-fstory', 0.5625, false, function (u) { setPend('fstory', u); });
-  bindDrop('drop-fpost', 0.8, false, function (u) { setPend('fpost', u); });
+  bindDrop('drop-fpost', 'free', false, function (u) { setPend('fpost', u); });
   bindDrop('drop-explore', 1, false, function (u) { setPend('explore', u); });
 
   Object.keys(FORMS).forEach(function (pfx) {
