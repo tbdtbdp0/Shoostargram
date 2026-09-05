@@ -165,6 +165,14 @@ textarea{line-height:1.5}
 }
 .item.selected .tag{background:var(--accent-soft); color:var(--accent-deep)}
 .item.editing .tag{background:#fdf0d8; color:#a86c10}
+.drag-handle{
+  width:20px; flex-shrink:0; align-self:stretch; display:flex; align-items:center; justify-content:center;
+  cursor:grab; color:var(--line-2); touch-action:none; margin:-8px 0 -8px -4px;
+}
+.drag-handle:hover{color:var(--muted)}
+.drag-handle svg{width:14px; height:14px; fill:currentColor; pointer-events:none}
+.item.dragging{opacity:.6; border-color:var(--accent); background:#fff; box-shadow:0 10px 24px rgba(21,51,72,.18)}
+.item.dragging .drag-handle{cursor:grabbing; color:var(--accent)}
 .item>img{width:38px; height:38px; border-radius:9px; object-fit:cover; flex-shrink:0; background:var(--panel-3)}
 .item>img.round{border-radius:50%}
 .item-info{flex:1; min-width:0; cursor:pointer}
@@ -581,9 +589,9 @@ textarea{line-height:1.5}
           <button class="btn btn-ghost" id="btn-cancel-post" style="display:none; flex:0 0 78px">취소</button>
         </div>
         <div class="sec-title">홈 피드 순서</div>
-        <div class="note">내 게시물과 <b>친구 게시물이 한 목록</b>으로 모여 있어요. ↑↓ 로 홈 피드에 뜨는 순서를 바꿀 수 있습니다.</div>
+        <div class="note">내 게시물과 <b>친구 게시물이 한 목록</b>으로 모여 있어요. 왼쪽 <b>⠿</b> 를 끌어 홈 피드에 뜨는 순서를 바꿀 수 있습니다.</div>
         <div id="post-list" style="margin-top:10px"></div>
-        <p class="hint">게시물을 <b>누르면 댓글</b>을 달 수 있어요. ↑↓ 순서 · ⧉ 복사 · ✏️ 수정 · 🗑 삭제</p>
+        <p class="hint">게시물을 <b>누르면 댓글</b>을 달 수 있어요. ⠿ 끌어서 순서 · ⧉ 복사 · ✏️ 수정 · 🗑 삭제</p>
 
         <div id="post-comment-editor" style="display:none">
           <div class="sec-title"><span id="post-comment-title">댓글</span></div>
@@ -621,7 +629,7 @@ textarea{line-height:1.5}
             <button class="btn btn-ghost" id="btn-cancel-reel" style="display:none; flex:0 0 78px">취소</button>
           </div>
           <div class="sec-title">릴스 순서</div>
-          <div class="note">내 릴스와 <b>친구 릴스가 한 목록</b>으로 모여 있어요. ↑↓ 로 릴스 탭에서 재생되는 순서를 바꿀 수 있습니다.</div>
+          <div class="note">내 릴스와 <b>친구 릴스가 한 목록</b>으로 모여 있어요. 왼쪽 <b>⠿</b> 를 끌어 릴스 탭에서 재생되는 순서를 바꿀 수 있습니다.</div>
           <div id="reel-list" style="margin-top:10px"></div>
         </div>
       </section>
@@ -752,7 +760,7 @@ textarea{line-height:1.5}
 
           <!-- 친구 게시물 -->
           <div class="sub" data-sub="posts" style="display:none">
-            <div class="note">친구 게시물은 <b>홈 피드에만</b> 보이고, 내 프로필 그리드에는 나오지 않아요.<br>피드에 뜨는 <b>순서 조정</b>은 게시물 탭 › <b>홈 피드 순서</b> 목록에서 하세요.</div>
+            <div class="note">친구 게시물은 <b>홈 피드에만</b> 보이고, 내 프로필 그리드에는 나오지 않아요.<br>피드에 뜨는 <b>순서 조정</b>은 게시물 탭 › <b>홈 피드 순서</b> 목록에서 끌어서 바꾸세요.</div>
             <div class="field">
               <div class="drop" id="drop-fpost">
                 <img class="drop-thumb" id="thumb-fpost" alt="">
@@ -784,7 +792,7 @@ textarea{line-height:1.5}
 
           <!-- 친구 릴스 -->
           <div class="sub" data-sub="reels" style="display:none">
-            <div class="note">친구 릴스도 <b>릴스 탭</b>에만 표시돼요.<br>재생되는 <b>순서 조정</b>은 게시물 탭 › <b>릴스</b> 목록에서 하세요.</div>
+            <div class="note">친구 릴스도 <b>릴스 탭</b>에만 표시돼요.<br>재생되는 <b>순서 조정</b>은 게시물 탭 › <b>릴스</b> 목록에서 끌어서 바꾸세요.</div>
             <div class="field">
               <div class="drop" id="drop-freel">
                 <img class="drop-thumb" id="thumb-freel" alt="">
@@ -1693,8 +1701,6 @@ textarea{line-height:1.5}
 
   /* ================= 편집 리스트 ================= */
   var ICON = {
-    up: '<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>',
-    down: '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>',
     copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
     edit: '<svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>',
     del: '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>'
@@ -1716,10 +1722,13 @@ textarea{line-height:1.5}
     return [];
   }
 
+  var DRAG_HANDLE = '<div class="drag-handle" title="끌어서 순서 변경">' +
+    '<svg viewBox="0 0 24 24"><circle cx="9" cy="5" r="1.7"/><circle cx="15" cy="5" r="1.7"/>' +
+    '<circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/>' +
+    '<circle cx="9" cy="19" r="1.7"/><circle cx="15" cy="19" r="1.7"/></svg></div>';
+
   function acts(key, id, i, len, canEdit) {
     return '<div class="item-acts">' +
-      '<button title="위로" data-act="up" data-key="' + key + '" data-id="' + esc(id) + '"' + (i === 0 ? ' disabled' : '') + '>' + ICON.up + '</button>' +
-      '<button title="아래로" data-act="down" data-key="' + key + '" data-id="' + esc(id) + '"' + (i === len - 1 ? ' disabled' : '') + '>' + ICON.down + '</button>' +
       '<button title="복사" data-act="copy" data-key="' + key + '" data-id="' + esc(id) + '">' + ICON.copy + '</button>' +
       (canEdit ? '<button title="수정" data-act="edit" data-key="' + key + '" data-id="' + esc(id) + '">' + ICON.edit + '</button>' : '') +
       '<button title="삭제" class="del" data-act="del" data-key="' + key + '" data-id="' + esc(id) + '">' + ICON.del + '</button></div>';
@@ -1728,13 +1737,14 @@ textarea{line-height:1.5}
   function renderList(boxId, key, opt) {
     var list = listOf(key), box = $(boxId);
     if (!box) return;
+    box.dataset.sortkey = key;
     if (!list.length) { box.innerHTML = '<div class="empty">' + opt.empty + '</div>'; return; }
     box.innerHTML = list.map(function (it, i) {
       var isSel = opt.selected && opt.selected === it.id;
       var isEdit = opt.editing && opt.editing === it.id;
       var cls = 'item' + (isEdit ? ' editing' : (isSel ? ' selected' : ''));
       var tag = isEdit ? '<span class="tag">수정 중</span>' : (isSel ? '<span class="tag">선택됨</span>' : '');
-      return '<div class="' + cls + '">' +
+      return '<div class="' + cls + '" data-rowid="' + esc(it.id) + '">' + DRAG_HANDLE +
         '<img class="' + (opt.round ? 'round' : '') + '" src="' + (opt.pic ? opt.pic(it) : it.pic) + '" alt="">' +
         '<div class="item-info"' + (opt.open ? ' data-open="' + key + ':' + esc(it.id) + '"' : '') + '>' +
           '<b>' + esc(opt.title(it, i)) + tag + '</b><small>' + esc(opt.sub(it, i)) + '</small></div>' +
@@ -1873,20 +1883,11 @@ textarea{line-height:1.5}
     });
     return min - 1;
   }
-  function moveMerged(kind, id, dir) {
-    var list = collectMerged(kind), idx = -1;
-    list.forEach(function (o, i) { if (o.p.id === id) idx = i; });
-    var j = idx + dir;
-    if (idx < 0 || j < 0 || j >= list.length) return;
-    list.forEach(function (o, i) { if (typeof o.p.order !== 'number') o.p.order = i; });
-    var a = list[idx].p, b = list[j].p;
-    if (a.order === b.order) list.forEach(function (o, i) { o.p.order = i; });
-    var t = a.order; a.order = b.order; b.order = t;
-  }
 
   function renderMergedList(kind) {
     var cfg = MERGED[kind], box = $(cfg.box), items = collectMerged(kind);
     var isPost = kind === 'posts';
+    box.dataset.sortkey = 'merged:' + kind;
     if (!items.length) {
       box.innerHTML = '<div class="empty">' + (isPost
         ? '아직 게시물이 없어요.<br>위에서 첫 게시물을 올려보세요 🌱'
@@ -1902,14 +1903,12 @@ textarea{line-height:1.5}
       sub += isPost
         ? ' · ' + (o.p.date || '방금 전') + ' · 댓글 ' + (o.p.comments || []).length + '개'
         : (o.p.views ? ' · 조회 ' + o.p.views : ' · 릴스');
-      return '<div class="item' + (isEdit ? ' editing' : (isSel ? ' selected' : '')) + '">' +
+      return '<div class="item' + (isEdit ? ' editing' : (isSel ? ' selected' : '')) + '" data-rowid="' + esc(id) + '">' + DRAG_HANDLE +
         '<img src="' + o.p.pic + '" alt="">' +
         '<div class="item-info"' + (isPost ? ' data-fsel="' + esc(id) + '"' : '') + '>' +
           '<b>' + esc(o.p.text || '(내용 없음)') + tag + '</b>' +
           '<small>' + esc(sub) + '</small></div>' +
         '<div class="item-acts">' +
-          '<button title="위로" data-fact="up" data-kind="' + kind + '" data-pid="' + esc(id) + '"' + (i === 0 ? ' disabled' : '') + '>' + ICON.up + '</button>' +
-          '<button title="아래로" data-fact="down" data-kind="' + kind + '" data-pid="' + esc(id) + '"' + (i === items.length - 1 ? ' disabled' : '') + '>' + ICON.down + '</button>' +
           '<button title="복사" data-fact="copy" data-kind="' + kind + '" data-pid="' + esc(id) + '">' + ICON.copy + '</button>' +
           '<button title="수정" data-fact="edit" data-kind="' + kind + '" data-pid="' + esc(id) + '">' + ICON.edit + '</button>' +
           '<button title="삭제" class="del" data-fact="del" data-kind="' + kind + '" data-pid="' + esc(id) + '">' + ICON.del + '</button>' +
@@ -2239,9 +2238,7 @@ textarea{line-height:1.5}
         if (key === 'friends') clone.name = clone.name + '_2';
         list.splice(idx + 1, 0, clone);
         toast('복사했어요 ⧉');
-      } else if (act === 'up' && idx > 0) { list.splice(idx - 1, 0, list.splice(idx, 1)[0]); }
-      else if (act === 'down' && idx < list.length - 1) { list.splice(idx + 1, 0, list.splice(idx, 1)[0]); }
-      else if (act === 'edit') {
+      } else if (act === 'edit') {
         if (key === 'highlights') startEditHL(id);
         else if (key === 'friends') startEditFriend(id);
         else {
@@ -2270,9 +2267,7 @@ textarea{line-height:1.5}
         }
         return;
       }
-      if (fact === 'up' || fact === 'down') {
-        moveMerged(kind, pid, fact === 'up' ? -1 : 1);
-      } else if (fact === 'del') {
+      if (fact === 'del') {
         if (!confirm('삭제할까요?')) return;
         own.list.splice(findIdx(own.list, pid), 1);
         if (selectedPost === pid) selectedPost = null;
@@ -2340,6 +2335,75 @@ textarea{line-height:1.5}
     }
   }
   $('editor-scroll').addEventListener('click', onListClick);
+
+  /* ---------- 끌어서 순서 변경 ---------- */
+  function applySort(box) {
+    var key = box.dataset.sortkey;
+    if (!key) return;
+    var ids = Array.prototype.map.call(box.querySelectorAll('.item[data-rowid]'), function (n) { return n.dataset.rowid; });
+    if (key.indexOf('merged:') === 0) {
+      var kind = key.slice(7);
+      ids.forEach(function (id, i) {
+        var own = mergedOwner(kind, id);
+        if (!own) return;
+        var item = find(own.list, id);
+        if (item) item.order = i;
+      });
+    } else {
+      var list = listOf(key), byId = {}, next = [];
+      list.forEach(function (x) { byId[x.id] = x; });
+      ids.forEach(function (id) { if (byId[id]) { next.push(byId[id]); delete byId[id]; } });
+      list.forEach(function (x) { if (byId[x.id]) next.push(x); });
+      list.length = 0;
+      Array.prototype.push.apply(list, next);
+    }
+    renderAll(); scheduleSave();
+  }
+
+  (function bindSort() {
+    var st = null;
+    document.addEventListener('pointerdown', function (e) {
+      var h = e.target.closest('.drag-handle');
+      if (!h) return;
+      var row = h.closest('.item');
+      var box = row && row.parentNode;
+      if (!row || !box || !box.dataset.sortkey) return;
+      e.preventDefault();
+      st = { row: row, box: box, handle: h, moved: false };
+      row.classList.add('dragging');
+      document.body.style.userSelect = 'none';
+      try { h.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    document.addEventListener('pointermove', function (e) {
+      if (!st) return;
+      st.moved = true;
+      // 목록 끝에 가까우면 살짝 스크롤
+      var sc = $('editor-scroll'), r = sc.getBoundingClientRect();
+      if (e.clientY < r.top + 48) sc.scrollTop -= 10;
+      else if (e.clientY > r.bottom - 48) sc.scrollTop += 10;
+
+      var rows = Array.prototype.filter.call(st.box.children, function (n) {
+        return n.classList && n.classList.contains('item') && n !== st.row;
+      });
+      var target = null;
+      for (var i = 0; i < rows.length; i++) {
+        var b = rows[i].getBoundingClientRect();
+        if (e.clientY < b.top + b.height / 2) { target = rows[i]; break; }
+      }
+      if (target) st.box.insertBefore(st.row, target);
+      else st.box.appendChild(st.row);
+    });
+    function end() {
+      if (!st) return;
+      var box = st.box, moved = st.moved;
+      st.row.classList.remove('dragging');
+      document.body.style.userSelect = '';
+      st = null;
+      if (moved) applySort(box);
+    }
+    document.addEventListener('pointerup', end);
+    document.addEventListener('pointercancel', end);
+  })();
 
   /* ---------- 탭 / 보기 모드 ---------- */
   function switchEditorTab(name) {
